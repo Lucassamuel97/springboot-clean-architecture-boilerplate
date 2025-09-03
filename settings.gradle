@@ -1,1 +1,3 @@
 rootProject.name = 'crudexample'
+
+include("domain", "application", "infrastructure")

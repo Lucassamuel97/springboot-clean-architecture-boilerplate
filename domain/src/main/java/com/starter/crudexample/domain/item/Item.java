@@ -41,7 +41,7 @@ public class Item extends AggregateRoot<ItemID>{
 
     @Override
     public void validate(final ValidationHandler handler) {
-        // TODO Auto-generated method stub
+        new ItemValidator(this, handler).validate();
     }
 
     public ItemID getId() {

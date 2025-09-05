@@ -10,9 +10,9 @@ dependencies {
     annotationProcessor(Libs.lombok)
 
     // Dependências de teste
-    testImplementation(Libs.springBootStarterTest)
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    testImplementation(Libs.springBootStarterTest) {
+        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+    }
 }
 
 tasks.withType<Test> {

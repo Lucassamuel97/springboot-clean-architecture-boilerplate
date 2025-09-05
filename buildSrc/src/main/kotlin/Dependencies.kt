@@ -1,6 +1,6 @@
 object Versions {
-    // Coloque aqui a versão exata que você usou no Spring Initializr
-    const val springBoot = "3.3.0" 
+    // Versão do Spring Boot que suporta Java 22
+    const val springBoot = "3.4.0" 
     const val java = "22"
 }
 

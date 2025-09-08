@@ -99,7 +99,7 @@ public class UserValidator extends Validator {
         // Validar se todas as roles estão presentes no enum Role
         for (Role role : roles) {
             if (role == null) {
-                this.validationHandler().append(new Error("'role' should not be null"));
+                this.validationHandler().append(new Error("'role' should valid and not null"));
                 continue;
             }
             

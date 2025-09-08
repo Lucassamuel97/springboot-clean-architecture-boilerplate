@@ -123,7 +123,7 @@ public class User extends AggregateRoot<UserID> {
     }
 
     public List<Role> getRoles() {
-        return Collections.unmodifiableList(roles);
+        return roles == null ? null : Collections.unmodifiableList(roles);
     }
 
     public boolean isActive() {

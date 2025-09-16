@@ -9,17 +9,17 @@ import java.util.Objects;
 
 public non-sealed class DefaultCreateItemUseCase extends CreateItemUseCase {
 
-	private final ItemGateway itemGateway;
+    private final ItemGateway itemGateway;
 
-	public DefaultCreateItemUseCase(final ItemGateway itemGateway) {
-        this.itemGateway =  Objects.requireNonNull(itemGateway);
+    public DefaultCreateItemUseCase(final ItemGateway itemGateway) {
+        this.itemGateway = Objects.requireNonNull(itemGateway);
     }
 
     @Override
     public CreateItemOutput execute(final CreateItemCommand aCommand) {
         final var aName = aCommand.name();
         final var aDescription = aCommand.description();
-		final var aPrice = aCommand.price();
+        final var aPrice = aCommand.price();
 
         final var notification = Notification.create();
 

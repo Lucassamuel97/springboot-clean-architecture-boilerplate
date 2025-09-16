@@ -3,8 +3,10 @@ package com.starter.crudexample.domain.item;
 import java.time.Instant;
 
 import com.starter.crudexample.domain.AggregateRoot;
+import com.starter.crudexample.domain.exceptions.NotificationException;
 import com.starter.crudexample.domain.utils.InstantUtils;
 import com.starter.crudexample.domain.validation.ValidationHandler;
+import com.starter.crudexample.domain.validation.handler.Notification;
 
 public class Item extends AggregateRoot<ItemID>{
 
@@ -31,6 +33,7 @@ public class Item extends AggregateRoot<ItemID>{
         this.createdAt = aCreatedAt;
         this.updatedAt = aUpdatedAt;
         this.deletedAt = aDeletedAt;
+        selfValidate();
     }
 
     public static Item newItem(final String aName, final String aDescription, final Double aPrice) {
@@ -70,5 +73,14 @@ public class Item extends AggregateRoot<ItemID>{
 
     public Instant getDeletedAt() {
         return deletedAt;
+    }
+
+    private void selfValidate() {
+        final var notification = Notification.create();
+        validate(notification);
+
+        if (notification.hasError()) {
+            throw new NotificationException("Failed to create a Aggregate CastMember", notification);
+        }
     }
 }

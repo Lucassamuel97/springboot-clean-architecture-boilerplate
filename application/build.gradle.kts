@@ -14,4 +14,13 @@ dependencies {
 
     compileOnly(Libs.lombok)
     annotationProcessor(Libs.lombok)
+
+    // Dependências de teste para casos de uso
+    testImplementation(Libs.springBootStarterTest) {
+        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

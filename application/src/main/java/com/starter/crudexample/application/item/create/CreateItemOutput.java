@@ -11,7 +11,7 @@ public record CreateItemOutput(
         return new CreateItemOutput(anId.getValue());
     }
 
-    public static CreateItemOutput from(final Item aMember) {
-        return from(aMember.getId());
+    public static CreateItemOutput from(final Item aItem) {
+        return from(aItem.getId());
     }
 }

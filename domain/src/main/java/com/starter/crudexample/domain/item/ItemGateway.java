@@ -3,6 +3,9 @@ package com.starter.crudexample.domain.item;
 import java.util.List;
 import java.util.Optional;
 
+import com.starter.crudexample.domain.pagination.Pagination;
+import com.starter.crudexample.domain.pagination.SearchQuery;
+
 public interface ItemGateway {
 
     Item create(Item anItem);
@@ -13,7 +16,7 @@ public interface ItemGateway {
 
     Item update(Item anItem);
 
-    List<Item> findAll(String aQuery);
+     Pagination<Item> findAll(SearchQuery aQuery);
 
     List<ItemID> existsByIds(Iterable<ItemID> ids);
 }

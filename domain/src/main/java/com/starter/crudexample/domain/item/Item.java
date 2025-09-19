@@ -42,6 +42,39 @@ public class Item extends AggregateRoot<ItemID>{
         return new Item(anId, aName, aDescription, aPrice, now, now, null);
     }
 
+    public static Item with(
+            final ItemID anId,
+        final String aName,
+        final String aDescription,
+        final Double aPrice,
+        final Instant aCreatedAt,
+        final Instant aUpdatedAt,
+        final Instant aDeletedAt
+    ) {
+        return new Item(anId, aName, aDescription, aPrice, aCreatedAt, aUpdatedAt, aDeletedAt);
+    }
+
+    public static Item with(final Item aItem) {
+        return new Item(
+                aItem.id,
+                aItem.name,
+                aItem.description,
+                aItem.price,
+                aItem.createdAt,
+                aItem.updatedAt,
+                aItem.deletedAt
+        );
+    }
+    
+    public Item update(final String aName, final String aDescription, final Double aPrice) {
+        this.name = aName;
+        this.description = aDescription;
+        this.price = aPrice;
+        this.updatedAt = InstantUtils.now();
+        selfValidate();
+        return this;
+    }
+
     @Override
     public void validate(final ValidationHandler handler) {
         new ItemValidator(this, handler).validate();
@@ -80,7 +113,7 @@ public class Item extends AggregateRoot<ItemID>{
         validate(notification);
 
         if (notification.hasError()) {
-            throw new NotificationException("Failed to create a Aggregate CastMember", notification);
+            throw new NotificationException("Failed to create a Aggregate Item", notification);
         }
     }
 }

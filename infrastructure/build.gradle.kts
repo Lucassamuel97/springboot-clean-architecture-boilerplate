@@ -4,8 +4,7 @@ plugins {
     id("org.springframework.boot") // Plugin do Spring Boot
 }
 
-// Mova a classe CrudexampleApplication.java para infrastructure/src/main/java/...
-// e informe ao plugin do Spring Boot onde encontrá-la.
+
 springBoot {
     mainClass.set("com.starter.crudexample.CrudexampleApplication")
 }
@@ -13,6 +12,7 @@ springBoot {
 dependencies {
     // Depende do módulo de aplicação
     implementation(project(":application"))
+    implementation(project(":domain"))
 
     // Implementações concretas do Spring
     implementation(Libs.springBootStarterWeb)

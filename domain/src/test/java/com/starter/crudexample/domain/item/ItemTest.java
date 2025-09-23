@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import com.starter.crudexample.domain.UnitTest;
 import com.starter.crudexample.domain.exceptions.DomainException;
-import com.starter.crudexample.domain.validation.handler.ThrowsValidationHandler;
 
 import org.junit.jupiter.api.Assertions;
 
@@ -41,10 +40,9 @@ class ItemTest extends UnitTest {
         final var expectedPrice = 129.99;
 
         //When
-        final var actualItem = Item.newItem(expectedName, expectedDescription, expectedPrice);
         final var actualException =
-                Assertions.assertThrows(DomainException.class, () -> actualItem.validate(new ThrowsValidationHandler()));
-
+                Assertions.assertThrows(DomainException.class, () -> Item.newItem(expectedName, expectedDescription, expectedPrice));
+                
         //Then
         Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
         Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
@@ -60,10 +58,9 @@ class ItemTest extends UnitTest {
         final var expectedPrice = 129.99;
 
         // When
-        final var actualItem = Item.newItem(expectedName, expectedDescription, expectedPrice);
         final var actualException =
-                Assertions.assertThrows(DomainException.class, () -> actualItem.validate(new ThrowsValidationHandler()));
-
+                Assertions.assertThrows(DomainException.class, () -> Item.newItem(expectedName, expectedDescription, expectedPrice));
+                
         // Then
         Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
         Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
@@ -79,10 +76,9 @@ class ItemTest extends UnitTest {
         final var expectedPrice = 129.99;
 
         // When
-        final var actualItem = Item.newItem(expectedName, expectedDescription, expectedPrice);
         final var actualException =
-                Assertions.assertThrows(DomainException.class, () -> actualItem.validate(new ThrowsValidationHandler()));
-
+                Assertions.assertThrows(DomainException.class, () -> Item.newItem(expectedName, expectedDescription, expectedPrice));
+                
         // Then
         Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
         Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
@@ -100,10 +96,9 @@ class ItemTest extends UnitTest {
         final var expectedPrice = 129.99;
 
         // When
-        final var actualItem = Item.newItem(expectedName, expectedDescription, expectedPrice);
         final var actualException =
-                Assertions.assertThrows(DomainException.class, () -> actualItem.validate(new ThrowsValidationHandler()));
-
+                Assertions.assertThrows(DomainException.class, () -> Item.newItem(expectedName, expectedDescription, expectedPrice));
+                
         // Then
         Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
         Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
@@ -119,9 +114,8 @@ class ItemTest extends UnitTest {
         final var expectedPrice = 129.99;
 
         // When
-        final var actualItem = Item.newItem(expectedName, expectedDescription, expectedPrice);
         final var actualException =
-                Assertions.assertThrows(DomainException.class, () -> actualItem.validate(new ThrowsValidationHandler()));
+                Assertions.assertThrows(DomainException.class, () -> Item.newItem(expectedName, expectedDescription, expectedPrice));
 
         // Then
         Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
@@ -138,10 +132,9 @@ class ItemTest extends UnitTest {
         final var expectedErrorMessage = "'price' should not be null";
 
         // When
-        final var actualItem = Item.newItem(expectedName, expectedDescription, expectedPrice);
         final var actualException =
-                Assertions.assertThrows(DomainException.class, () -> actualItem.validate(new ThrowsValidationHandler()));
-
+                Assertions.assertThrows(DomainException.class, () -> Item.newItem(expectedName, expectedDescription, expectedPrice));
+                
         // Then
         Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
         Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
@@ -157,10 +150,9 @@ class ItemTest extends UnitTest {
         final var expectedErrorMessage = "'price' should not be negative";
 
         // When
-        final var actualItem = Item.newItem(expectedName, expectedDescription, expectedPrice);
         final var actualException =
-                Assertions.assertThrows(DomainException.class, () -> actualItem.validate(new ThrowsValidationHandler()));
-
+                Assertions.assertThrows(DomainException.class, () -> Item.newItem(expectedName, expectedDescription, expectedPrice));
+                
         // Then
         Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
         Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());

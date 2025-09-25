@@ -18,6 +18,8 @@ public class ItemValidator extends Validator {
     @Override
     public void validate() {
         checkNameConstraints();
+        checkDescriptionConstraints();
+        checkPriceConstraints();
     }
 
     private void checkNameConstraints() {
@@ -35,16 +37,34 @@ public class ItemValidator extends Validator {
         final int length = name.trim().length();
         if (length > NAME_MAX_LENGTH || length < NAME_MIN_LENGTH) {
             this.validationHandler().append(new Error("'name' must be between 3 and 255 characters"));
+            return;
         }
 
-        if (this.item.getDescription() == null) {
+    }
+
+    private void checkDescriptionConstraints() {
+        final var description = this.item.getDescription();
+        if (description == null) {
             this.validationHandler().append(new Error("'description' should not be null"));
+            return;
         }
 
-        if (this.item.getPrice() == null) {
+        if (description.length() > 1000) {
+            this.validationHandler().append(new Error("'description' must be less than 1000 characters"));
+            return;
+        }
+    }
+
+    private void checkPriceConstraints() {
+        final var price = this.item.getPrice();
+        if (price == null) {
             this.validationHandler().append(new Error("'price' should not be null"));
-        } else if (this.item.getPrice() < 0) {
+            return;
+        }
+
+        if (price < 0) {
             this.validationHandler().append(new Error("'price' should not be negative"));
+            return;
         }
     }
 }

@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 
 import com.starter.crudexample.application.item.create.CreateItemUseCase;
 import com.starter.crudexample.application.item.create.DefaultCreateItemUseCase;
+import com.starter.crudexample.application.item.delete.DefaultDeleteItemUseCase;
+import com.starter.crudexample.application.item.delete.DeleteItemUseCase;
 import com.starter.crudexample.application.item.retrieve.get.DefaultGetItemByIdUseCase;
 import com.starter.crudexample.application.item.retrieve.get.GetItemByIdUseCase;
 import com.starter.crudexample.domain.item.ItemGateway;
@@ -24,9 +26,14 @@ public class ItemUseCaseConfig {
     public CreateItemUseCase createItemUseCase() {
         return new DefaultCreateItemUseCase(itemGateway);
     }
-    
+
     @Bean
     public GetItemByIdUseCase getItemByIdUseCase() {
         return new DefaultGetItemByIdUseCase(itemGateway);
+    }
+
+    @Bean
+    public DeleteItemUseCase deleteItemUseCase() {
+        return new DefaultDeleteItemUseCase(itemGateway);
     }
 }

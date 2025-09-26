@@ -30,8 +30,7 @@ public class ItemMySQLGateway implements ItemGateway {
 
     @Override
     public void deleteById(ItemID anId) {
-        // TODO: Implementar deleção no banco de dados
-        throw new UnsupportedOperationException("Método deleteById não implementado ainda");
+        this.itemRepository.deleteById(anId.getValue());
     }
 
     @Override

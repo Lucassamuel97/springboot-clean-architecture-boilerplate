@@ -1,4 +1,4 @@
-package com.starter.crudexample.utils;
+package com.starter.crudexample.infrastructure.utils;
 
 public final class SqlUtils {
 

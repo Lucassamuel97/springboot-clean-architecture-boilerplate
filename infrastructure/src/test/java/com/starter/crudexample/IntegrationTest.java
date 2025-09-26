@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.starter.crudexample.configuration.WebServerConfig;
+import com.starter.crudexample.infrastructure.configuration.WebServerConfig;
 
 import java.lang.annotation.*;
 

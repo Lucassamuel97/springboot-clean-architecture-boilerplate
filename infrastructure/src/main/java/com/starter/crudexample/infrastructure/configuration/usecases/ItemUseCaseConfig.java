@@ -1,4 +1,4 @@
-package com.starter.crudexample.configuration.usecases;
+package com.starter.crudexample.infrastructure.configuration.usecases;
 
 import java.util.Objects;
 

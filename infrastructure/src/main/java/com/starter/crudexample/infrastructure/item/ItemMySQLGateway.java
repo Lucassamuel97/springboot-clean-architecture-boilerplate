@@ -16,7 +16,7 @@ import com.starter.crudexample.domain.pagination.Pagination;
 import com.starter.crudexample.domain.pagination.SearchQuery;
 import com.starter.crudexample.infrastructure.item.persistence.ItemJpaEntity;
 import com.starter.crudexample.infrastructure.item.persistence.ItemRepository;
-import com.starter.crudexample.utils.SpecificationUtils;
+import com.starter.crudexample.infrastructure.utils.SpecificationUtils;
 
 @Component
 public class ItemMySQLGateway implements ItemGateway {

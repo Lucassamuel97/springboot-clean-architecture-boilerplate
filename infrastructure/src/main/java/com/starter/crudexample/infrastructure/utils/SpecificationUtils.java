@@ -1,4 +1,4 @@
-package com.starter.crudexample.utils;
+package com.starter.crudexample.infrastructure.utils;
 
 import org.springframework.data.jpa.domain.Specification;
 

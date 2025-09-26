@@ -35,9 +35,9 @@ public class ItemMySQLGateway implements ItemGateway {
     }
 
     @Override
-    public Optional<Item> findById(ItemID anId) {
-        // TODO: Implementar busca por ID no banco de dados
-        throw new UnsupportedOperationException("Método findById não implementado ainda");
+    public Optional<Item> findById(final ItemID anId) {
+        return this.itemRepository.findById(anId.getValue())
+                .map(ItemJpaEntity::toAggregate);
     }
 
     @Override

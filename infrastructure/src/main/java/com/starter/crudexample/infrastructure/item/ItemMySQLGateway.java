@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.starter.crudexample.domain.item.Item;
@@ -13,6 +16,7 @@ import com.starter.crudexample.domain.pagination.Pagination;
 import com.starter.crudexample.domain.pagination.SearchQuery;
 import com.starter.crudexample.infrastructure.item.persistence.ItemJpaEntity;
 import com.starter.crudexample.infrastructure.item.persistence.ItemRepository;
+import com.starter.crudexample.utils.SpecificationUtils;
 
 @Component
 public class ItemMySQLGateway implements ItemGateway {
@@ -42,12 +46,27 @@ public class ItemMySQLGateway implements ItemGateway {
     @Override
     public Item update(final Item anItem) {
         return save(anItem);
-    }    
+    }
 
     @Override
     public Pagination<Item> findAll(SearchQuery aQuery) {
-        // TODO: Implementar busca paginada no banco de dados
-        throw new UnsupportedOperationException("Método findAll não implementado ainda");
+        final var page = PageRequest.of(
+                aQuery.page(),
+                aQuery.perPage(),
+                Sort.by(Sort.Direction.fromString(aQuery.direction()), aQuery.sort()));
+
+        final var where = Optional.ofNullable(aQuery.terms())
+                .filter(str -> !str.isBlank())
+                .map(this::assembleSpecification)
+                .orElse(null);
+
+        final var pageResult = this.itemRepository.findAll(where, page);
+
+        return new Pagination<>(
+                pageResult.getNumber(),
+                pageResult.getSize(),
+                pageResult.getTotalElements(),
+                pageResult.map(ItemJpaEntity::toAggregate).toList());
     }
 
     @Override
@@ -58,5 +77,9 @@ public class ItemMySQLGateway implements ItemGateway {
 
     private Item save(final Item anItem) {
         return this.itemRepository.save(ItemJpaEntity.from(anItem)).toAggregate();
+    }
+
+    private Specification<ItemJpaEntity> assembleSpecification(final String terms) {
+        return SpecificationUtils.like("name", terms);
     }
 }

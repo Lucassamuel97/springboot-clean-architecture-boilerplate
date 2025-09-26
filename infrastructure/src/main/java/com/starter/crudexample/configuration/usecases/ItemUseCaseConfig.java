@@ -11,6 +11,8 @@ import com.starter.crudexample.application.item.delete.DefaultDeleteItemUseCase;
 import com.starter.crudexample.application.item.delete.DeleteItemUseCase;
 import com.starter.crudexample.application.item.retrieve.get.DefaultGetItemByIdUseCase;
 import com.starter.crudexample.application.item.retrieve.get.GetItemByIdUseCase;
+import com.starter.crudexample.application.item.retrieve.list.DefaultListItemsUseCase;
+import com.starter.crudexample.application.item.retrieve.list.ListItemsUseCase;
 import com.starter.crudexample.application.item.update.DefaultUpdateItemUseCase;
 import com.starter.crudexample.application.item.update.UpdateItemUseCase;
 import com.starter.crudexample.domain.item.ItemGateway;
@@ -42,5 +44,10 @@ public class ItemUseCaseConfig {
     @Bean
     public UpdateItemUseCase updateItemUseCase() {
         return new DefaultUpdateItemUseCase(itemGateway);
+    }
+
+    @Bean
+    public ListItemsUseCase listItemUseCase() {
+        return new DefaultListItemsUseCase(itemGateway);
     }
 }

@@ -16,7 +16,7 @@ public interface ItemGateway {
 
     Item update(Item anItem);
 
-     Pagination<Item> findAll(SearchQuery aQuery);
+    Pagination<Item> findAll(SearchQuery aQuery);
 
     List<ItemID> existsByIds(Iterable<ItemID> ids);
 }

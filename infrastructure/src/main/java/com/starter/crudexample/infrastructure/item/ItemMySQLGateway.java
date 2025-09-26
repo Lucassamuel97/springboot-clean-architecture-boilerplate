@@ -40,10 +40,9 @@ public class ItemMySQLGateway implements ItemGateway {
     }
 
     @Override
-    public Item update(Item anItem) {
-        // TODO: Implementar atualização no banco de dados
-        throw new UnsupportedOperationException("Método update não implementado ainda");
-    }
+    public Item update(final Item anItem) {
+        return save(anItem);
+    }    
 
     @Override
     public Pagination<Item> findAll(SearchQuery aQuery) {

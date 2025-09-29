@@ -19,6 +19,12 @@ dependencies {
     implementation(Libs.springBootStarterDataJpa)
     implementation(Libs.springBootStarterSecurity)
     implementation(Libs.springBootStarterValidation)
+    
+    // Swagger/OpenAPI
+    implementation(Libs.springdocOpenapi)
+    
+    // Jackson modules
+    implementation(Libs.jacksonAfterburner)
 
     runtimeOnly(Libs.h2Database)
     developmentOnly(Libs.springBootDevTools)
@@ -28,4 +34,5 @@ dependencies {
 
     // Dependência de teste
     testImplementation(Libs.springBootStarterTest)
+    testImplementation(Libs.springSecurityTest)
 }

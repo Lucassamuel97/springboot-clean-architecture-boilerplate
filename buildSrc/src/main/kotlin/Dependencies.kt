@@ -10,8 +10,10 @@ object Libs {
     const val springBootStarterSecurity = "org.springframework.boot:spring-boot-starter-security"
     const val springBootStarterValidation = "org.springframework.boot:spring-boot-starter-validation"
     const val springBootStarterTest = "org.springframework.boot:spring-boot-starter-test"
+    const val springSecurityTest = "org.springframework.security:spring-security-test"
     const val springBootDevTools = "org.springframework.boot:spring-boot-devtools"
     const val h2Database = "com.h2database:h2"
     const val lombok = "org.projectlombok:lombok"
-    // Adicione as outras dependências aqui...
+    const val springdocOpenapi = "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0"
+    const val jacksonAfterburner = "com.fasterxml.jackson.module:jackson-module-afterburner"
 }

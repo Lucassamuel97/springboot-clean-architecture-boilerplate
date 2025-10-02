@@ -6,9 +6,12 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -32,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.starter.crudexample.ControllerTest;
 import com.starter.crudexample.application.item.create.CreateItemOutput;
 import com.starter.crudexample.application.item.create.DefaultCreateItemUseCase;
+import com.starter.crudexample.application.item.delete.DefaultDeleteItemUseCase;
 import com.starter.crudexample.application.item.retrieve.get.DefaultGetItemByIdUseCase;
 import com.starter.crudexample.application.item.retrieve.get.ItemOutput;
 import com.starter.crudexample.application.item.update.DefaultUpdateItemUseCase;
@@ -61,6 +65,9 @@ public class ItemAPITest {
 
         @MockitoBean
         private DefaultUpdateItemUseCase updateItemUseCase;
+
+        @MockitoBean
+        private DefaultDeleteItemUseCase deleteItemUseCase;
 
         @Test
         public void givenAValidCommand_whenCallsCreateItem_thenShouldReturnItemId() throws Exception {
@@ -246,5 +253,46 @@ public class ItemAPITest {
                                                 && Objects.equals(expectedName, actualCmd.name())
                                                 && Objects.equals(expectedDescription, actualCmd.description())
                                                 && Objects.equals(expectedPrice, actualCmd.price())));
+        }
+
+        @Test
+        public void givenAValidId_whenCallsDeleteById_shouldDeleteIt() throws Exception {
+                // given
+                final var expectedId = ItemID.from("123");
+
+                doNothing().when(deleteItemUseCase).execute(any());
+
+                // when
+                final var aRequest = delete("/items/{id}", expectedId.getValue());
+
+                final var response = this.mvc.perform(aRequest)
+                                .andDo(print());
+
+                // then
+                response.andExpect(status().isNoContent());
+
+                verify(deleteItemUseCase)
+                                .execute(eq(expectedId.getValue()));
+        }
+
+        @Test
+        public void givenAInvalidId_whenCallsDeleteByIdAndItemDoesntExists_shouldReturnNotFound() throws Exception {
+                // given
+                final var expectedId = ItemID.from("123");
+
+                doThrow(NotFoundException.with(Item.class, expectedId))
+                                .when(deleteItemUseCase).execute(any());
+
+                // when
+                final var aRequest = delete("/items/{id}", expectedId.getValue());
+
+                final var response = this.mvc.perform(aRequest)
+                                .andDo(print());
+
+                // then
+                response.andExpect(status().isNotFound());
+
+                verify(deleteItemUseCase)
+                                .execute(eq(expectedId.getValue()));
         }
 }

@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.hamcrest.Matchers;
@@ -38,12 +39,15 @@ import com.starter.crudexample.application.item.create.DefaultCreateItemUseCase;
 import com.starter.crudexample.application.item.delete.DefaultDeleteItemUseCase;
 import com.starter.crudexample.application.item.retrieve.get.DefaultGetItemByIdUseCase;
 import com.starter.crudexample.application.item.retrieve.get.ItemOutput;
+import com.starter.crudexample.application.item.retrieve.list.DefaultListItemsUseCase;
+import com.starter.crudexample.application.item.retrieve.list.ItemListOutput;
 import com.starter.crudexample.application.item.update.DefaultUpdateItemUseCase;
 import com.starter.crudexample.application.item.update.UpdateItemOutput;
 import com.starter.crudexample.domain.exceptions.NotFoundException;
 import com.starter.crudexample.domain.exceptions.NotificationException;
 import com.starter.crudexample.domain.item.Item;
 import com.starter.crudexample.domain.item.ItemID;
+import com.starter.crudexample.domain.pagination.Pagination;
 import com.starter.crudexample.domain.validation.Error;
 import com.starter.crudexample.infrastructure.item.models.CreateItemRequest;
 import com.starter.crudexample.infrastructure.item.models.UpdateItemRequest;
@@ -68,6 +72,9 @@ public class ItemAPITest {
 
         @MockitoBean
         private DefaultDeleteItemUseCase deleteItemUseCase;
+
+        @MockitoBean
+        private DefaultListItemsUseCase listItemsUseCase;
 
         @Test
         public void givenAValidCommand_whenCallsCreateItem_thenShouldReturnItemId() throws Exception {
@@ -294,5 +301,109 @@ public class ItemAPITest {
 
                 verify(deleteItemUseCase)
                                 .execute(eq(expectedId.getValue()));
+        }
+
+        @Test
+        public void givenValidParams_whenCallListItems_shouldReturnIt() throws Exception {
+                // given
+                final var expectedName = "Item name";
+                final var expectedDescription = "Item description";
+                final var expectedPrice = 10.0;
+
+                final var aItem = Item.newItem(expectedName, expectedDescription, expectedPrice);
+                final var expectedId = aItem.getId().getValue();
+
+                final var expectedPage = 1;
+                final var expectedPerPage = 20;
+                final var expectedTerms = "name";
+                final var expectedSort = "name";
+                final var expectedDirection = "desc";
+
+                final var expectedItemsCount = 1;
+                final var expectedTotal = 1;
+
+                final var expectedItems = List.of(ItemListOutput.from(aItem));
+
+                when(listItemsUseCase.execute(any()))
+                                .thenReturn(new Pagination<>(expectedPage, expectedPerPage, expectedTotal,
+                                                expectedItems));
+
+                // when
+                final var aRequest = get("/items")
+                                .queryParam("page", String.valueOf(expectedPage))
+                                .queryParam("perPage", String.valueOf(expectedPerPage))
+                                .queryParam("search", expectedTerms)
+                                .queryParam("sort", expectedSort)
+                                .queryParam("dir", expectedDirection)
+                                .accept(MediaType.APPLICATION_JSON);
+                final var response = this.mvc.perform(aRequest);
+                // then
+                response.andExpect(status().isOk())
+                                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                                .andExpect(jsonPath("$.current_page", equalTo(expectedPage)))
+                                .andExpect(jsonPath("$.per_page", equalTo(expectedPerPage)))
+                                .andExpect(jsonPath("$.total", equalTo(expectedTotal)))
+                                .andExpect(jsonPath("$.items", hasSize(expectedItemsCount)))
+                                .andExpect(jsonPath("$.items[0].id", equalTo(expectedId)))
+                                .andExpect(jsonPath("$.items[0].name", equalTo(expectedName)))
+                                .andExpect(jsonPath("$.items[0].description", equalTo(expectedDescription)))
+                                .andExpect(jsonPath("$.items[0].price", equalTo(expectedPrice)))
+                                .andExpect(jsonPath("$.items[0].created_at", equalTo(aItem.getCreatedAt().toString())));
+
+                verify(listItemsUseCase).execute(argThat(aQuery -> Objects.equals(expectedPage, aQuery.page())
+                                && Objects.equals(expectedPerPage, aQuery.perPage())
+                                && Objects.equals(expectedTerms, aQuery.terms())
+                                && Objects.equals(expectedSort, aQuery.sort())
+                                && Objects.equals(expectedDirection, aQuery.direction())));
+        }
+
+        @Test
+        public void givenEmptyParams_whenCallListItems_shouldUseDefaultsAndReturnIt() throws Exception {
+                // given
+                final var expectedName = "Item name";
+                final var expectedDescription = "Item description";
+                final var expectedPrice = 10.0;
+                final var aItem = Item.newItem(expectedName, expectedDescription, expectedPrice);
+                final var expectedId = aItem.getId().getValue();
+
+                final var expectedPage = 0;
+                final var expectedPerPage = 10;
+                final var expectedTerms = "";
+                final var expectedSort = "name";
+                final var expectedDirection = "asc";
+
+                final var expectedItemsCount = 1;
+                final var expectedTotal = 1;
+
+                final var expectedItems = List.of(ItemListOutput.from(aItem));
+
+                when(listItemsUseCase.execute(any()))
+                                .thenReturn(new Pagination<>(expectedPage, expectedPerPage, expectedTotal,
+                                                expectedItems));
+
+                // when
+                final var aRequest = get("/items")
+                                .accept(MediaType.APPLICATION_JSON);
+                
+                final var response = this.mvc.perform(aRequest);
+                
+                // then
+                response.andExpect(status().isOk())
+                                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                                .andExpect(jsonPath("$.current_page", equalTo(expectedPage)))
+                                .andExpect(jsonPath("$.per_page", equalTo(expectedPerPage)))
+                                .andExpect(jsonPath("$.total", equalTo(expectedTotal)))
+                                .andExpect(jsonPath("$.items", hasSize(expectedItemsCount)))
+                                .andExpect(jsonPath("$.items[0].id", equalTo(expectedId)))
+                                .andExpect(jsonPath("$.items[0].name", equalTo(expectedName)))
+                                .andExpect(jsonPath("$.items[0].description", equalTo(expectedDescription)))
+                                .andExpect(jsonPath("$.items[0].price", equalTo(expectedPrice)))
+                                .andExpect(jsonPath("$.items[0].created_at", equalTo(aItem.getCreatedAt().toString())));
+                
+                verify(listItemsUseCase).execute(argThat(aQuery -> Objects.equals(expectedPage, aQuery.page())
+                                && Objects.equals(expectedPerPage, aQuery.perPage())
+                                && Objects.equals(expectedTerms, aQuery.terms())
+                                && Objects.equals(expectedSort, aQuery.sort())
+                                && Objects.equals(expectedDirection, aQuery.direction())));
         }
 }

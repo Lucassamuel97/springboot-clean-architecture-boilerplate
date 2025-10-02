@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.starter.crudexample.application.item.create.CreateItemCommand;
 import com.starter.crudexample.application.item.create.CreateItemUseCase;
+import com.starter.crudexample.application.item.delete.DeleteItemUseCase;
 import com.starter.crudexample.application.item.retrieve.get.GetItemByIdUseCase;
 import com.starter.crudexample.application.item.update.UpdateItemCommand;
 import com.starter.crudexample.application.item.update.UpdateItemUseCase;
@@ -23,14 +24,17 @@ public class ItemController implements ItemAPI {
     private final CreateItemUseCase createItemUseCase;
     private final GetItemByIdUseCase getItemByIdUseCase;
     private final UpdateItemUseCase updateItemUseCase;
+    private final DeleteItemUseCase deleteItemUseCase;
 
     public ItemController(
         final CreateItemUseCase createItemUseCase, 
         final GetItemByIdUseCase getItemByIdUseCase,
-        final UpdateItemUseCase updateItemUseCase) {
+        final UpdateItemUseCase updateItemUseCase,
+        final DeleteItemUseCase deleteItemUseCase) {
         this.createItemUseCase = Objects.requireNonNull(createItemUseCase);
         this.getItemByIdUseCase = Objects.requireNonNull(getItemByIdUseCase);
         this.updateItemUseCase = Objects.requireNonNull(updateItemUseCase);
+        this.deleteItemUseCase = Objects.requireNonNull(deleteItemUseCase);
     }
     
     @Override
@@ -63,5 +67,10 @@ public class ItemController implements ItemAPI {
         final var output = this.updateItemUseCase.execute(aCommand);
 
         return ResponseEntity.ok(output);
+    }
+
+    @Override
+    public void deleteById(final String id) {
+        this.deleteItemUseCase.execute(id);
     }
 }

@@ -10,10 +10,14 @@ import com.starter.crudexample.application.item.create.CreateItemCommand;
 import com.starter.crudexample.application.item.create.CreateItemUseCase;
 import com.starter.crudexample.application.item.delete.DeleteItemUseCase;
 import com.starter.crudexample.application.item.retrieve.get.GetItemByIdUseCase;
+import com.starter.crudexample.application.item.retrieve.list.ListItemsUseCase;
 import com.starter.crudexample.application.item.update.UpdateItemCommand;
 import com.starter.crudexample.application.item.update.UpdateItemUseCase;
+import com.starter.crudexample.domain.pagination.Pagination;
+import com.starter.crudexample.domain.pagination.SearchQuery;
 import com.starter.crudexample.infrastructure.api.ItemAPI;
 import com.starter.crudexample.infrastructure.item.models.CreateItemRequest;
+import com.starter.crudexample.infrastructure.item.models.ItemListResponse;
 import com.starter.crudexample.infrastructure.item.models.ItemResponse;
 import com.starter.crudexample.infrastructure.item.models.UpdateItemRequest;
 import com.starter.crudexample.infrastructure.item.presenter.ItemPresenter;
@@ -25,16 +29,19 @@ public class ItemController implements ItemAPI {
     private final GetItemByIdUseCase getItemByIdUseCase;
     private final UpdateItemUseCase updateItemUseCase;
     private final DeleteItemUseCase deleteItemUseCase;
+    private final ListItemsUseCase listItemsUseCase;
 
     public ItemController(
         final CreateItemUseCase createItemUseCase, 
         final GetItemByIdUseCase getItemByIdUseCase,
         final UpdateItemUseCase updateItemUseCase,
-        final DeleteItemUseCase deleteItemUseCase) {
+        final DeleteItemUseCase deleteItemUseCase,
+        final ListItemsUseCase listItemsUseCase) {
         this.createItemUseCase = Objects.requireNonNull(createItemUseCase);
         this.getItemByIdUseCase = Objects.requireNonNull(getItemByIdUseCase);
         this.updateItemUseCase = Objects.requireNonNull(updateItemUseCase);
         this.deleteItemUseCase = Objects.requireNonNull(deleteItemUseCase);
+        this.listItemsUseCase = Objects.requireNonNull(listItemsUseCase);
     }
     
     @Override
@@ -72,5 +79,17 @@ public class ItemController implements ItemAPI {
     @Override
     public void deleteById(final String id) {
         this.deleteItemUseCase.execute(id);
+    }
+
+    @Override
+    public Pagination<ItemListResponse> list(
+            final String search,
+            final int page,
+            final int perPage,
+            final String sort,
+            final String direction
+    ) {
+        return this.listItemsUseCase.execute(new SearchQuery(page, perPage, search, sort, direction))
+                .map(ItemPresenter::present);
     }
 }

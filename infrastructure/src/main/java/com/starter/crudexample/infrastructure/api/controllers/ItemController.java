@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.starter.crudexample.application.item.create.CreateItemCommand;
 import com.starter.crudexample.application.item.create.CreateItemUseCase;
 import com.starter.crudexample.application.item.retrieve.get.GetItemByIdUseCase;
+import com.starter.crudexample.application.item.update.UpdateItemCommand;
+import com.starter.crudexample.application.item.update.UpdateItemUseCase;
 import com.starter.crudexample.infrastructure.api.ItemAPI;
 import com.starter.crudexample.infrastructure.item.models.CreateItemRequest;
 import com.starter.crudexample.infrastructure.item.models.ItemResponse;
+import com.starter.crudexample.infrastructure.item.models.UpdateItemRequest;
 import com.starter.crudexample.infrastructure.item.presenter.ItemPresenter;
 
 @RestController
@@ -19,12 +22,15 @@ public class ItemController implements ItemAPI {
     
     private final CreateItemUseCase createItemUseCase;
     private final GetItemByIdUseCase getItemByIdUseCase;
+    private final UpdateItemUseCase updateItemUseCase;
 
     public ItemController(
         final CreateItemUseCase createItemUseCase, 
-        final GetItemByIdUseCase getItemByIdUseCase) {
+        final GetItemByIdUseCase getItemByIdUseCase,
+        final UpdateItemUseCase updateItemUseCase) {
         this.createItemUseCase = Objects.requireNonNull(createItemUseCase);
         this.getItemByIdUseCase = Objects.requireNonNull(getItemByIdUseCase);
+        this.updateItemUseCase = Objects.requireNonNull(updateItemUseCase);
     }
     
     @Override
@@ -43,5 +49,19 @@ public class ItemController implements ItemAPI {
     @Override
     public ItemResponse getById(final String id) {
         return ItemPresenter.present(this.getItemByIdUseCase.execute(id));
+    }
+
+    @Override
+    public ResponseEntity<?> updateById(String id, UpdateItemRequest aBody) {
+        final var aCommand = UpdateItemCommand.with(
+            id,
+            aBody.name(),
+            aBody.description(),
+            aBody.price()
+        );
+
+        final var output = this.updateItemUseCase.execute(aCommand);
+
+        return ResponseEntity.ok(output);
     }
 }

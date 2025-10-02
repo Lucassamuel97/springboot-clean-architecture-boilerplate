@@ -9,7 +9,7 @@ public record UpdateItemOutput(String id) {
         return new UpdateItemOutput(anId.getValue());
     }
 
-    public static UpdateItemOutput from(final Item aMember) {
-        return from(aMember.getId());
+    public static UpdateItemOutput from(final Item aItem) {
+        return from(aItem.getId());
     }
 }

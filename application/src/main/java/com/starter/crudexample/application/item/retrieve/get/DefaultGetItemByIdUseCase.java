@@ -17,9 +17,9 @@ public non-sealed class DefaultGetItemByIdUseCase extends GetItemByIdUseCase {
 
     @Override
     public ItemOutput execute(final String anIn) {
-        final var aMemberId = ItemID.from(anIn);
-        return this.itemGateway.findById(aMemberId)
+        final var aItemId = ItemID.from(anIn);
+        return this.itemGateway.findById(aItemId)
                 .map(ItemOutput::from)
-                .orElseThrow(() -> NotFoundException.with(Item.class, aMemberId));
+                .orElseThrow(() -> NotFoundException.with(Item.class, aItemId));
     }
 }

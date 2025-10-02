@@ -59,7 +59,7 @@ public class GetItemByIdUseCaseTest extends UseCaseTest {
     }
 
     @Test
-    public void givenAInvalidId_whenCallsGetCastMemberAndDoesNotExists_shouldReturnNotFoundException() {
+    public void givenAInvalidId_whenCallsGetItemAndDoesNotExists_shouldReturnNotFoundException() {
         // given
         final var expectedId = "123";
 

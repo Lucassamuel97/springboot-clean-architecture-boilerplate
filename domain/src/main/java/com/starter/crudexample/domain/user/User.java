@@ -40,7 +40,7 @@ public class User extends AggregateRoot<UserID> {
         this.active = isActive;
         this.createdAt = Objects.requireNonNull(aCreatedAt, "'createdAt' should not be null");
         this.updatedAt = Objects.requireNonNull(aUpdatedAt, "'updatedAt' should not be null");
-        this.deletedAt = aDeletedAt;
+    this.deletedAt = aDeletedAt;
     }
 
     public static User newUser(
@@ -141,4 +141,6 @@ public class User extends AggregateRoot<UserID> {
     public Instant getDeletedAt() {
         return deletedAt;
     }
+
+    public UserID getId() { return id; }
 }

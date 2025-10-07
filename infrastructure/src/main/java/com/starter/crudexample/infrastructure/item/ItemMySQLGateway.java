@@ -3,6 +3,7 @@ package com.starter.crudexample.infrastructure.item;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -70,9 +71,14 @@ public class ItemMySQLGateway implements ItemGateway {
     }
 
     @Override
-    public List<ItemID> existsByIds(Iterable<ItemID> ids) {
-        // TODO: Implementar verificação de existência no banco de dados
-        throw new UnsupportedOperationException("Método existsByIds não implementado ainda");
+    public List<ItemID> existsByIds(final Iterable<ItemID> ItemIDS) {
+        final var ids = StreamSupport.stream(ItemIDS.spliterator(), false)
+                .map(ItemID::getValue)
+                .toList();
+
+        return this.itemRepository.existsByIds(ids).stream()
+                .map(ItemID::from)
+                .toList();
     }
 
     private Item save(final Item anItem) {

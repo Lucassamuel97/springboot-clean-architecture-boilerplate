@@ -143,4 +143,21 @@ public class User extends AggregateRoot<UserID> {
     }
 
     public UserID getId() { return id; }
+
+    public User update(
+        final String aUsername,
+        final String anEmail,
+        final String aPassword,
+        final List<Role> aRoles,
+        final boolean isActive
+    ) {
+        this.username = aUsername;
+        this.email = anEmail;
+        this.password = aPassword;
+        this.roles = aRoles;
+        this.active = isActive;
+        this.deletedAt = isActive ? null : (this.deletedAt == null ? InstantUtils.now() : this.deletedAt);
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
 }

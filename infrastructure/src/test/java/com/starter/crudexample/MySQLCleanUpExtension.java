@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.starter.crudexample.infrastructure.item.persistence.ItemRepository;
+import com.starter.crudexample.infrastructure.user.persistence.UserRepository;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,11 +18,12 @@ public class MySQLCleanUpExtension implements BeforeEachCallback {
         final var appContext = SpringExtension.getApplicationContext(context);
 
         cleanUp(List.of(
-                appContext.getBean(ItemRepository.class)
+        appContext.getBean(ItemRepository.class),
+        appContext.getBean(UserRepository.class)
          ));
     }
 
-    private void cleanUp(final Collection<CrudRepository> repositories) {
+    private void cleanUp(final Collection<CrudRepository<?, ?>> repositories) {
         repositories.forEach(CrudRepository::deleteAll);
     }
 }

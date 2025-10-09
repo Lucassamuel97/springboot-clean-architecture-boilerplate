@@ -89,6 +89,20 @@ public class User extends AggregateRoot<UserID> {
         );
     }
 
+    public static User with(final User aUser) {
+        return new User(
+            aUser.id,
+            aUser.username,
+            aUser.email,
+            aUser.password,
+            aUser.roles,
+            aUser.active,
+            aUser.createdAt,
+            aUser.updatedAt,
+            aUser.deletedAt
+        );
+    }
+    
     @Override
     public void validate(final ValidationHandler handler) {
         new UserValidator(this, handler).validate();

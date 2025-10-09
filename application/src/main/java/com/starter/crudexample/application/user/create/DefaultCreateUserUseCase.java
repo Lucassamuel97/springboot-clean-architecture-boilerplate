@@ -30,6 +30,11 @@ public non-sealed class DefaultCreateUserUseCase extends CreateUserUseCase {
         final var userDraft = User.newUser(aUsername, anEmail, rawPassword, roles, isActive);
         userDraft.validate(notification);
 
+        // Validação de unicidade de e-mail
+        if (anEmail != null && this.userGateway.existsByEmail(anEmail)) {
+            notification.append(new com.starter.crudexample.domain.validation.Error("'email' is already in use"));
+        }
+
         if (notification.hasError()) {
             notify(notification);
         }

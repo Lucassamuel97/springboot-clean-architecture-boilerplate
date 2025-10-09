@@ -19,4 +19,6 @@ public interface UserGateway {
     Pagination<User> findAll(SearchQuery aQuery);
 
     List<UserID> existsByIds(Iterable<UserID> ids);
+
+    boolean existsByEmail(String email);
 }

@@ -8,11 +8,13 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,8 +29,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.starter.crudexample.ControllerTest;
 import com.starter.crudexample.application.user.create.CreateUserOutput;
 import com.starter.crudexample.application.user.create.DefaultCreateUserUseCase;
+import com.starter.crudexample.application.user.retrieve.get.DefaultGetUserByIdUseCase;
+import com.starter.crudexample.application.user.retrieve.get.GetUserByIdOutput;
+import com.starter.crudexample.domain.exceptions.NotFoundException;
 import com.starter.crudexample.domain.exceptions.NotificationException;
 import com.starter.crudexample.domain.user.Role;
+import com.starter.crudexample.domain.user.User;
+import com.starter.crudexample.domain.user.UserID;
 import com.starter.crudexample.domain.validation.Error;
 import com.starter.crudexample.infrastructure.user.models.CreateUserRequest;
 
@@ -43,6 +50,9 @@ public class UserAPITest {
 
     @MockitoBean
     private DefaultCreateUserUseCase createUserUseCase;
+
+    @MockitoBean
+    private DefaultGetUserByIdUseCase getUserByIdUseCase;
 
     @Test
     public void givenAValidCommand_whenCallsCreateUser_thenShouldReturnUserId() throws Exception {
@@ -145,5 +155,70 @@ public class UserAPITest {
                 Objects.equals(expectedPassword, cmd.password()) &&
                 Objects.equals(expectedRoles, cmd.roles()) &&
                 Objects.equals(expectedActive, cmd.active())));
+    }
+
+    @Test
+    public void givenAValidId_whenCallsGetUserById_thenShouldReturnUser() throws Exception {
+        // Given
+        final var expectedId = "abc-123";
+        final var expectedUsername = "johndoe";
+        final var expectedEmail = "john.doe@example.com";
+        final var expectedRoles = List.of(Role.USER);
+        final var expectedActive = true;
+        final var expectedCreatedAt = Instant.now();
+        final var expectedUpdatedAt = Instant.now();
+
+        final var output = new GetUserByIdOutput(
+                expectedId,
+                expectedUsername,
+                expectedEmail,
+                expectedRoles,
+                expectedActive,
+                expectedCreatedAt,
+                expectedUpdatedAt,
+                null
+        );
+
+        when(getUserByIdUseCase.execute(any()))
+                .thenReturn(output);
+
+        // When
+        final var response = this.mvc.perform(get("/users/{id}", expectedId)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", equalTo(expectedId)))
+                .andExpect(jsonPath("$.username", equalTo(expectedUsername)))
+                .andExpect(jsonPath("$.email", equalTo(expectedEmail)))
+                .andExpect(jsonPath("$.roles", hasSize(1)))
+                .andExpect(jsonPath("$.active", equalTo(expectedActive)))
+                .andExpect(jsonPath("$.created_at").exists())
+                .andExpect(jsonPath("$.updated_at").exists());
+
+        verify(getUserByIdUseCase, times(1)).execute(argThat(query ->
+                Objects.equals(expectedId, query.id())
+        ));
+    }
+
+    @Test
+    public void givenAnInvalidId_whenCallsGetUserById_thenShouldReturnNotFound() throws Exception {
+        // Given
+        final var expectedId = "invalid-id";
+        final var expectedErrorMessage = "User with ID invalid-id was not found";
+
+        when(getUserByIdUseCase.execute(any()))
+                .thenThrow(NotFoundException.with(User.class, UserID.from(expectedId)));
+
+        // When
+        final var response = this.mvc.perform(get("/users/{id}", expectedId)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        response.andExpect(status().isNotFound());
+
+        verify(getUserByIdUseCase, times(1)).execute(argThat(query ->
+                Objects.equals(expectedId, query.id())
+        ));
     }
 }

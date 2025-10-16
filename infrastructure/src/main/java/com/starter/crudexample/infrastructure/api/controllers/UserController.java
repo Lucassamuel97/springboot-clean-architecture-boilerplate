@@ -9,17 +9,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.starter.crudexample.application.user.create.CreateUserCommand;
 import com.starter.crudexample.application.user.create.CreateUserUseCase;
+import com.starter.crudexample.application.user.retrieve.get.GetUserByIdQuery;
+import com.starter.crudexample.application.user.retrieve.get.GetUserByIdUseCase;
 import com.starter.crudexample.domain.user.Role;
 import com.starter.crudexample.infrastructure.api.UserAPI;
 import com.starter.crudexample.infrastructure.user.models.CreateUserRequest;
+import com.starter.crudexample.infrastructure.user.models.UserResponse;
 
 @RestController
 public class UserController implements UserAPI {
 
     private final CreateUserUseCase createUserUseCase;
+    private final GetUserByIdUseCase getUserByIdUseCase;
 
-    public UserController(final CreateUserUseCase createUserUseCase) {
+    public UserController(
+        final CreateUserUseCase createUserUseCase,
+        final GetUserByIdUseCase getUserByIdUseCase
+    ) {
         this.createUserUseCase = Objects.requireNonNull(createUserUseCase);
+        this.getUserByIdUseCase = Objects.requireNonNull(getUserByIdUseCase);
     }
 
     @Override
@@ -36,5 +44,12 @@ public class UserController implements UserAPI {
 
         final var output = this.createUserUseCase.execute(aCommand);
         return ResponseEntity.created(URI.create("/users/" + output.id())).body(output);
+    }
+
+    @Override
+    public ResponseEntity<?> getById(String id) {
+        final var aQuery = GetUserByIdQuery.with(id);
+        final var output = this.getUserByIdUseCase.execute(aQuery);
+        return ResponseEntity.ok(UserResponse.from(output));
     }
 }

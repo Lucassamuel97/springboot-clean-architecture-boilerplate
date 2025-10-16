@@ -2,6 +2,8 @@ package com.starter.crudexample.infrastructure.configuration.usecases;
 
 import java.util.Objects;
 
+import com.starter.crudexample.application.user.retrieve.get.DefaultGetUserByIdUseCase;
+import com.starter.crudexample.application.user.retrieve.get.GetUserByIdUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,5 +26,10 @@ public class UserUseCaseConfig {
     @Bean
     public CreateUserUseCase createUserUseCase() {
         return new DefaultCreateUserUseCase(userGateway, passwordHasher);
+    }
+
+    @Bean
+    public GetUserByIdUseCase getUserByIdUseCase() {
+        return new DefaultGetUserByIdUseCase(userGateway);
     }
 }

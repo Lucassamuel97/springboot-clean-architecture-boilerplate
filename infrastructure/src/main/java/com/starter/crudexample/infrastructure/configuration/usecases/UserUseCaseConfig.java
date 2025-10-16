@@ -4,6 +4,8 @@ import java.util.Objects;
 
 import com.starter.crudexample.application.user.retrieve.get.DefaultGetUserByIdUseCase;
 import com.starter.crudexample.application.user.retrieve.get.GetUserByIdUseCase;
+import com.starter.crudexample.application.user.update.DefaultUpdateUserUseCase;
+import com.starter.crudexample.application.user.update.UpdateUserUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,5 +33,10 @@ public class UserUseCaseConfig {
     @Bean
     public GetUserByIdUseCase getUserByIdUseCase() {
         return new DefaultGetUserByIdUseCase(userGateway);
+    }
+
+    @Bean
+    public UpdateUserUseCase updateUserUseCase() {
+        return new DefaultUpdateUserUseCase(userGateway, passwordHasher);
     }
 }

@@ -5,9 +5,13 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -30,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.starter.crudexample.ControllerTest;
 import com.starter.crudexample.application.user.create.CreateUserOutput;
 import com.starter.crudexample.application.user.create.DefaultCreateUserUseCase;
+import com.starter.crudexample.application.user.delete.DefaultDeleteUserUseCase;
 import com.starter.crudexample.application.user.retrieve.get.DefaultGetUserByIdUseCase;
 import com.starter.crudexample.application.user.retrieve.get.GetUserByIdOutput;
 import com.starter.crudexample.application.user.update.DefaultUpdateUserUseCase;
@@ -60,6 +65,9 @@ public class UserAPITest {
 
     @MockitoBean
     private DefaultUpdateUserUseCase updateUserUseCase;
+
+    @MockitoBean
+    private DefaultDeleteUserUseCase deleteUserUseCase;
 
     @Test
     public void givenAValidCommand_whenCallsCreateUser_thenShouldReturnUserId() throws Exception {
@@ -212,7 +220,6 @@ public class UserAPITest {
     public void givenAnInvalidId_whenCallsGetUserById_thenShouldReturnNotFound() throws Exception {
         // Given
         final var expectedId = "invalid-id";
-        final var expectedErrorMessage = "User with ID invalid-id was not found";
 
         when(getUserByIdUseCase.execute(any()))
                 .thenThrow(NotFoundException.with(User.class, UserID.from(expectedId)));
@@ -434,5 +441,38 @@ public class UserAPITest {
                 Objects.equals(expectedRoles, cmd.roles()) &&
                 Objects.equals(expectedActive, cmd.active())
         ));
+    }
+
+    @Test
+    public void givenAValidId_whenCallsDeleteById_thenShouldDeleteIt() throws Exception {
+        // Given
+        final var expectedId = "abc-123";
+
+        doNothing().when(deleteUserUseCase).execute(any());
+
+        // When
+        final var response = this.mvc.perform(delete("/users/{id}", expectedId));
+
+        // Then
+        response.andExpect(status().isNoContent());
+
+        verify(deleteUserUseCase, times(1)).execute(eq(expectedId));
+    }
+
+    @Test
+    public void givenAnInvalidId_whenCallsDeleteByIdAndUserDoesntExists_thenShouldReturnNotFound() throws Exception {
+        // Given
+        final var expectedId = "invalid-id";
+
+        doThrow(NotFoundException.with(User.class, UserID.from(expectedId)))
+                .when(deleteUserUseCase).execute(any());
+
+        // When
+        final var response = this.mvc.perform(delete("/users/{id}", expectedId));
+
+        // Then
+        response.andExpect(status().isNotFound());
+
+        verify(deleteUserUseCase, times(1)).execute(eq(expectedId));
     }
 }

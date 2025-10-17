@@ -2,6 +2,8 @@ package com.starter.crudexample.infrastructure.configuration.usecases;
 
 import java.util.Objects;
 
+import com.starter.crudexample.application.user.delete.DefaultDeleteUserUseCase;
+import com.starter.crudexample.application.user.delete.DeleteUserUseCase;
 import com.starter.crudexample.application.user.retrieve.get.DefaultGetUserByIdUseCase;
 import com.starter.crudexample.application.user.retrieve.get.GetUserByIdUseCase;
 import com.starter.crudexample.application.user.update.DefaultUpdateUserUseCase;
@@ -38,5 +40,10 @@ public class UserUseCaseConfig {
     @Bean
     public UpdateUserUseCase updateUserUseCase() {
         return new DefaultUpdateUserUseCase(userGateway, passwordHasher);
+    }
+
+    @Bean
+    public DeleteUserUseCase deleteUserUseCase() {
+        return new DefaultDeleteUserUseCase(userGateway);
     }
 }

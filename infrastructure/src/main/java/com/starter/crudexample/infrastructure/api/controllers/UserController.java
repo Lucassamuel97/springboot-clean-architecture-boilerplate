@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.starter.crudexample.application.user.create.CreateUserCommand;
 import com.starter.crudexample.application.user.create.CreateUserUseCase;
+import com.starter.crudexample.application.user.delete.DeleteUserUseCase;
 import com.starter.crudexample.application.user.retrieve.get.GetUserByIdQuery;
 import com.starter.crudexample.application.user.retrieve.get.GetUserByIdUseCase;
 import com.starter.crudexample.application.user.update.UpdateUserCommand;
@@ -25,15 +26,18 @@ public class UserController implements UserAPI {
     private final CreateUserUseCase createUserUseCase;
     private final GetUserByIdUseCase getUserByIdUseCase;
     private final UpdateUserUseCase updateUserUseCase;
+    private final DeleteUserUseCase deleteUserUseCase;
 
     public UserController(
         final CreateUserUseCase createUserUseCase,
         final GetUserByIdUseCase getUserByIdUseCase,
-        final UpdateUserUseCase updateUserUseCase
+        final UpdateUserUseCase updateUserUseCase,
+        final DeleteUserUseCase deleteUserUseCase
     ) {
         this.createUserUseCase = Objects.requireNonNull(createUserUseCase);
         this.getUserByIdUseCase = Objects.requireNonNull(getUserByIdUseCase);
         this.updateUserUseCase = Objects.requireNonNull(updateUserUseCase);
+        this.deleteUserUseCase = Objects.requireNonNull(deleteUserUseCase);
     }
 
     @Override
@@ -75,5 +79,10 @@ public class UserController implements UserAPI {
         final var output = this.updateUserUseCase.execute(aCommand);
 
         return ResponseEntity.ok(output);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        this.deleteUserUseCase.execute(id);
     }
 }

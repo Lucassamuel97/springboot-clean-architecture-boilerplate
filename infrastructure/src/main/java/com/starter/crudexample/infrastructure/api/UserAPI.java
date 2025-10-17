@@ -10,10 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.starter.crudexample.domain.pagination.Pagination;
 import com.starter.crudexample.infrastructure.user.models.CreateUserRequest;
 import com.starter.crudexample.infrastructure.user.models.UpdateUserRequest;
+import com.starter.crudexample.infrastructure.user.models.UserListResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -60,4 +63,18 @@ public interface UserAPI {
         @ApiResponse(responseCode = "500", description = "An internal server error was thrown"),
     })
     void deleteById(@PathVariable String id);
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "List all Users")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Users retrieved"),
+        @ApiResponse(responseCode = "500", description = "An internal server error was thrown"),
+    })
+    Pagination<UserListResponse> list(
+        @RequestParam(name = "search", required = false, defaultValue = "") final String search,
+        @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
+        @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
+        @RequestParam(name = "sort", required = false, defaultValue = "username") final String sort,
+        @RequestParam(name = "dir", required = false, defaultValue = "asc") final String direction
+    );
 }

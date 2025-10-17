@@ -6,6 +6,8 @@ import com.starter.crudexample.application.user.delete.DefaultDeleteUserUseCase;
 import com.starter.crudexample.application.user.delete.DeleteUserUseCase;
 import com.starter.crudexample.application.user.retrieve.get.DefaultGetUserByIdUseCase;
 import com.starter.crudexample.application.user.retrieve.get.GetUserByIdUseCase;
+import com.starter.crudexample.application.user.retrieve.list.DefaultListUsersUseCase;
+import com.starter.crudexample.application.user.retrieve.list.ListUsersUseCase;
 import com.starter.crudexample.application.user.update.DefaultUpdateUserUseCase;
 import com.starter.crudexample.application.user.update.UpdateUserUseCase;
 import org.springframework.context.annotation.Bean;
@@ -45,5 +47,10 @@ public class UserUseCaseConfig {
     @Bean
     public DeleteUserUseCase deleteUserUseCase() {
         return new DefaultDeleteUserUseCase(userGateway);
+    }
+
+    @Bean
+    public ListUsersUseCase listUsersUseCase() {
+        return new DefaultListUsersUseCase(userGateway);
     }
 }

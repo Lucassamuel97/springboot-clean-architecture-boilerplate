@@ -12,13 +12,17 @@ import com.starter.crudexample.application.user.create.CreateUserUseCase;
 import com.starter.crudexample.application.user.delete.DeleteUserUseCase;
 import com.starter.crudexample.application.user.retrieve.get.GetUserByIdQuery;
 import com.starter.crudexample.application.user.retrieve.get.GetUserByIdUseCase;
+import com.starter.crudexample.application.user.retrieve.list.ListUsersUseCase;
 import com.starter.crudexample.application.user.update.UpdateUserCommand;
 import com.starter.crudexample.application.user.update.UpdateUserUseCase;
+import com.starter.crudexample.domain.pagination.Pagination;
+import com.starter.crudexample.domain.pagination.SearchQuery;
 import com.starter.crudexample.domain.user.Role;
 import com.starter.crudexample.infrastructure.api.UserAPI;
 import com.starter.crudexample.infrastructure.user.models.CreateUserRequest;
 import com.starter.crudexample.infrastructure.user.models.UpdateUserRequest;
-import com.starter.crudexample.infrastructure.user.models.UserResponse;
+import com.starter.crudexample.infrastructure.user.models.UserListResponse;
+import com.starter.crudexample.infrastructure.user.presenter.UserPresenter;
 
 @RestController
 public class UserController implements UserAPI {
@@ -27,17 +31,20 @@ public class UserController implements UserAPI {
     private final GetUserByIdUseCase getUserByIdUseCase;
     private final UpdateUserUseCase updateUserUseCase;
     private final DeleteUserUseCase deleteUserUseCase;
+    private final ListUsersUseCase listUsersUseCase;
 
     public UserController(
         final CreateUserUseCase createUserUseCase,
         final GetUserByIdUseCase getUserByIdUseCase,
         final UpdateUserUseCase updateUserUseCase,
-        final DeleteUserUseCase deleteUserUseCase
+        final DeleteUserUseCase deleteUserUseCase,
+        final ListUsersUseCase listUsersUseCase
     ) {
         this.createUserUseCase = Objects.requireNonNull(createUserUseCase);
         this.getUserByIdUseCase = Objects.requireNonNull(getUserByIdUseCase);
         this.updateUserUseCase = Objects.requireNonNull(updateUserUseCase);
         this.deleteUserUseCase = Objects.requireNonNull(deleteUserUseCase);
+        this.listUsersUseCase = Objects.requireNonNull(listUsersUseCase);
     }
 
     @Override
@@ -60,7 +67,7 @@ public class UserController implements UserAPI {
     public ResponseEntity<?> getById(String id) {
         final var aQuery = GetUserByIdQuery.with(id);
         final var output = this.getUserByIdUseCase.execute(aQuery);
-        return ResponseEntity.ok(UserResponse.from(output));
+        return ResponseEntity.ok(UserPresenter.present(output));
     }
 
     @Override
@@ -84,5 +91,17 @@ public class UserController implements UserAPI {
     @Override
     public void deleteById(String id) {
         this.deleteUserUseCase.execute(id);
+    }
+
+    @Override
+    public Pagination<UserListResponse> list(
+        final String search,
+        final int page,
+        final int perPage,
+        final String sort,
+        final String direction
+    ) {
+        return this.listUsersUseCase.execute(new SearchQuery(page, perPage, search, sort, direction))
+                .map(UserPresenter::present);
     }
 }

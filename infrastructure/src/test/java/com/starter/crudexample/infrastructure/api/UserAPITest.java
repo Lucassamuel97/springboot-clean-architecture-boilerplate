@@ -37,10 +37,13 @@ import com.starter.crudexample.application.user.create.DefaultCreateUserUseCase;
 import com.starter.crudexample.application.user.delete.DefaultDeleteUserUseCase;
 import com.starter.crudexample.application.user.retrieve.get.DefaultGetUserByIdUseCase;
 import com.starter.crudexample.application.user.retrieve.get.GetUserByIdOutput;
+import com.starter.crudexample.application.user.retrieve.list.DefaultListUsersUseCase;
+import com.starter.crudexample.application.user.retrieve.list.UserListOutput;
 import com.starter.crudexample.application.user.update.DefaultUpdateUserUseCase;
 import com.starter.crudexample.application.user.update.UpdateUserOutput;
 import com.starter.crudexample.domain.exceptions.NotFoundException;
 import com.starter.crudexample.domain.exceptions.NotificationException;
+import com.starter.crudexample.domain.pagination.Pagination;
 import com.starter.crudexample.domain.user.Role;
 import com.starter.crudexample.domain.user.User;
 import com.starter.crudexample.domain.user.UserID;
@@ -68,6 +71,9 @@ public class UserAPITest {
 
     @MockitoBean
     private DefaultDeleteUserUseCase deleteUserUseCase;
+
+    @MockitoBean
+    private DefaultListUsersUseCase listUsersUseCase;
 
     @Test
     public void givenAValidCommand_whenCallsCreateUser_thenShouldReturnUserId() throws Exception {
@@ -474,5 +480,62 @@ public class UserAPITest {
         response.andExpect(status().isNotFound());
 
         verify(deleteUserUseCase, times(1)).execute(eq(expectedId));
+    }
+
+    @Test
+    public void givenValidParams_whenCallListUsers_thenShouldReturnIt() throws Exception {
+        // Given
+        final var expectedUsername = "johndoe";
+        final var expectedEmail = "john.doe@example.com";
+        final var expectedRoles = List.of(Role.USER);
+        final var expectedActive = true;
+
+        final var aUser = User.newUser(expectedUsername, expectedEmail, "pass123", expectedRoles, expectedActive);
+        final var expectedId = aUser.getId().getValue();
+
+        final var expectedPage = 1;
+        final var expectedPerPage = 20;
+        final var expectedTerms = "john";
+        final var expectedSort = "username";
+        final var expectedDirection = "desc";
+
+        final var expectedUsersCount = 1;
+        final var expectedTotal = 1;
+
+        final var expectedUsers = List.of(UserListOutput.from(aUser));
+
+        when(listUsersUseCase.execute(any()))
+                .thenReturn(new Pagination<>(expectedPage, expectedPerPage, expectedTotal, expectedUsers));
+
+        // When
+        final var response = this.mvc.perform(get("/users")
+                .queryParam("page", String.valueOf(expectedPage))
+                .queryParam("perPage", String.valueOf(expectedPerPage))
+                .queryParam("search", expectedTerms)
+                .queryParam("sort", expectedSort)
+                .queryParam("dir", expectedDirection)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        response.andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.current_page", equalTo(expectedPage)))
+                .andExpect(jsonPath("$.per_page", equalTo(expectedPerPage)))
+                .andExpect(jsonPath("$.total", equalTo(expectedTotal)))
+                .andExpect(jsonPath("$.items", hasSize(expectedUsersCount)))
+                .andExpect(jsonPath("$.items[0].id", equalTo(expectedId)))
+                .andExpect(jsonPath("$.items[0].username", equalTo(expectedUsername)))
+                .andExpect(jsonPath("$.items[0].email", equalTo(expectedEmail)))
+                .andExpect(jsonPath("$.items[0].roles", hasSize(1)))
+                .andExpect(jsonPath("$.items[0].active", equalTo(expectedActive)))
+                .andExpect(jsonPath("$.items[0].created_at", equalTo(aUser.getCreatedAt().toString())));
+
+        verify(listUsersUseCase, times(1)).execute(argThat(aQuery ->
+                Objects.equals(expectedPage, aQuery.page()) &&
+                Objects.equals(expectedPerPage, aQuery.perPage()) &&
+                Objects.equals(expectedTerms, aQuery.terms()) &&
+                Objects.equals(expectedSort, aQuery.sort()) &&
+                Objects.equals(expectedDirection, aQuery.direction())
+        ));
     }
 }

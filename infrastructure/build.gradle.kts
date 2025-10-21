@@ -25,6 +25,11 @@ dependencies {
     
     // Jackson modules
     implementation(Libs.jacksonAfterburner)
+    
+    // JWT
+    implementation(Libs.jjwtApi)
+    runtimeOnly(Libs.jjwtImpl)
+    runtimeOnly(Libs.jjwtJackson)
 
     runtimeOnly(Libs.h2Database)
     developmentOnly(Libs.springBootDevTools)
@@ -35,4 +40,6 @@ dependencies {
     // Dependência de teste
     testImplementation(Libs.springBootStarterTest)
     testImplementation(Libs.springSecurityTest)
+    testImplementation(Libs.springSecurityOauth2Jose)
+    testImplementation(Libs.springSecurityOauth2ResourceServer)
 }

@@ -21,4 +21,6 @@ public interface UserGateway {
     List<UserID> existsByIds(Iterable<UserID> ids);
 
     boolean existsByEmail(String email);
+
+    Optional<User> findByUsername(String username);
 }

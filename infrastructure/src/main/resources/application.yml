@@ -1,1 +1,9 @@
-spring.application.name=crudexample
+spring:
+  application:
+    name: crudexample
+
+# JWT Configuration
+app:
+  jwt:
+    secret: ${JWT_SECRET:mySecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLongToMeetTheRequirements}
+    expiration-ms: ${JWT_EXPIRATION:86400000} # 24 horas em millisegundos

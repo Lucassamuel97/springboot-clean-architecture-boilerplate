@@ -6,7 +6,7 @@ plugins {
 
 
 springBoot {
-    mainClass.set("com.starter.crudexample.CrudexampleApplication")
+    mainClass.set("com.starter.crudexample.infrastructure.CrudexampleApplication")
 }
 
 dependencies {
@@ -30,6 +30,11 @@ dependencies {
     implementation(Libs.jjwtApi)
     runtimeOnly(Libs.jjwtImpl)
     runtimeOnly(Libs.jjwtJackson)
+
+    // Database
+    runtimeOnly(Libs.mysqlConnector)
+    implementation(Libs.flywayCore)
+    implementation(Libs.flywayMysql)
 
     runtimeOnly(Libs.h2Database)
     developmentOnly(Libs.springBootDevTools)

@@ -15,6 +15,7 @@ object Libs {
     const val springSecurityOauth2ResourceServer = "org.springframework.security:spring-security-oauth2-resource-server"
     const val springBootDevTools = "org.springframework.boot:spring-boot-devtools"
     const val h2Database = "com.h2database:h2"
+    const val mysqlConnector = "com.mysql:mysql-connector-j"
     const val lombok = "org.projectlombok:lombok"
     const val springdocOpenapi = "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0"
     const val jacksonAfterburner = "com.fasterxml.jackson.module:jackson-module-afterburner"
@@ -23,4 +24,8 @@ object Libs {
     const val jjwtApi = "io.jsonwebtoken:jjwt-api:0.12.5"
     const val jjwtImpl = "io.jsonwebtoken:jjwt-impl:0.12.5"
     const val jjwtJackson = "io.jsonwebtoken:jjwt-jackson:0.12.5"
+
+    // Flyway
+    const val flywayCore = "org.flywaydb:flyway-core"
+    const val flywayMysql = "org.flywaydb:flyway-mysql"
 }

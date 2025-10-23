@@ -15,9 +15,10 @@ spring:
     enabled: true
     baseline-on-migrate: true
 
-jwt:
-  secret: test-secret-key-for-e2e-tests-minimum-512-bits-required
-  expiration: 86400000
+app:
+  jwt:
+    secret: test-secret-key-for-e2e-tests-minimum-512-bits-required
+    expiration-ms: 86400000
 
 mysql:
   username: root

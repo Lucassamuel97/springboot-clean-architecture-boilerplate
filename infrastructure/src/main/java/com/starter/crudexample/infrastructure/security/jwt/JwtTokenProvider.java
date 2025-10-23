@@ -82,22 +82,23 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String authToken) {
+        final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(JwtTokenProvider.class);
         try {
             Jwts.parser()
-                .verifyWith((SecretKey) jwtSecret)
-                .build()
-                .parseSignedClaims(authToken);
+            .verifyWith((SecretKey) jwtSecret)
+            .build()
+            .parseSignedClaims(authToken);
             return true;
         } catch (SignatureException ex) {
-            // Invalid JWT signature
+            logger.debug("JWT validation failed: {}", ex.getMessage());
         } catch (MalformedJwtException ex) {
-            // Invalid JWT token
+            logger.debug("JWT validation failed: {}", ex.getMessage());
         } catch (ExpiredJwtException ex) {
-            // Expired JWT token
+            logger.debug("JWT validation failed: {}", ex.getMessage());
         } catch (UnsupportedJwtException ex) {
-            // Unsupported JWT token
+            logger.debug("JWT validation failed: {}", ex.getMessage());
         } catch (IllegalArgumentException ex) {
-            // JWT claims string is empty
+            logger.debug("JWT validation failed: {}", ex.getMessage());
         }
         return false;
     }

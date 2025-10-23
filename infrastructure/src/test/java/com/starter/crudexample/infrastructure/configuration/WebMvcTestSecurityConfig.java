@@ -15,12 +15,12 @@ public class WebMvcTestSecurityConfig {
     @Bean
     public SecurityFilterChain webMvcTestFilterChain(HttpSecurity http) throws Exception {
         // Limita este chain apenas às rotas de API sob teste
-        http.securityMatcher("/items/**", "/users/**", "/api/items/**", "/api/users/**");
+        http.securityMatcher("/items/**", "/users/**");
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/items/**", "/api/items/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/users/**", "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/items/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .build();

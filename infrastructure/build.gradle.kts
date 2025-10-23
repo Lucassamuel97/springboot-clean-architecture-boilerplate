@@ -47,4 +47,9 @@ dependencies {
     testImplementation(Libs.springSecurityTest)
     testImplementation(Libs.springSecurityOauth2Jose)
     testImplementation(Libs.springSecurityOauth2ResourceServer)
+    
+    // TestContainers para testes E2E
+    testImplementation(Libs.testcontainersJupiter)
+    testImplementation(Libs.testcontainersMysql)
+    testImplementation(Libs.restAssured)
 }

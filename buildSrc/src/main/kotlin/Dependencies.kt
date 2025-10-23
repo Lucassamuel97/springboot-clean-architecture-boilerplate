@@ -2,6 +2,7 @@ object Versions {
     // Versão do Spring Boot que suporta Java 22
     const val springBoot = "3.4.0" 
     const val java = "22"
+    const val testcontainers = "1.20.4"
 }
 
 object Libs {
@@ -28,4 +29,9 @@ object Libs {
     // Flyway
     const val flywayCore = "org.flywaydb:flyway-core"
     const val flywayMysql = "org.flywaydb:flyway-mysql"
+    
+    // TestContainers
+    const val testcontainersJupiter = "org.testcontainers:junit-jupiter:${Versions.testcontainers}"
+    const val testcontainersMysql = "org.testcontainers:mysql:${Versions.testcontainers}"
+    const val restAssured = "io.rest-assured:rest-assured:5.5.0"
 }

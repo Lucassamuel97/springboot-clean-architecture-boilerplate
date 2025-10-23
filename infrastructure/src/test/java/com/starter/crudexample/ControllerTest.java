@@ -9,14 +9,13 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.starter.crudexample.infrastructure.configuration.ObjectMapperConfig;
-import com.starter.crudexample.infrastructure.configuration.TestSecurityConfig;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@ActiveProfiles("test-integration")
+@ActiveProfiles({"test-integration", "test-webmvc"})
 @WebMvcTest
-@Import({ObjectMapperConfig.class, TestSecurityConfig.class})
+@Import({ObjectMapperConfig.class})
 @Tag("integrationTest")
 public @interface ControllerTest {
 

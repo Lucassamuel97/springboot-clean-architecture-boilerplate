@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.starter.crudexample.ControllerTest;
+import com.starter.crudexample.ApiTest;
 import com.starter.crudexample.application.item.create.CreateItemOutput;
 import com.starter.crudexample.application.item.create.DefaultCreateItemUseCase;
 import com.starter.crudexample.application.item.delete.DefaultDeleteItemUseCase;
@@ -90,7 +91,7 @@ public class ItemAPITest {
                                 .thenReturn(new CreateItemOutput("123"));
 
                 // When
-                final var response = this.mvc.perform(post("/items")
+                final var response = this.mvc.perform(post("/items").with(ApiTest.ADMIN_JWT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(aCommand)))
                                 .andDo(print());
@@ -121,7 +122,7 @@ public class ItemAPITest {
                                 .thenThrow(NotificationException.with(new Error(expectedMessage)));
 
                 // when
-                final var aRequest = post("/items")
+                final var aRequest = post("/items").with(ApiTest.ADMIN_JWT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(aCommand));
 
@@ -154,7 +155,7 @@ public class ItemAPITest {
                                 .thenReturn(ItemOutput.from(aItem));
 
                 // when
-                final var aRequest = get("/items/{id}", expectedId)
+                final var aRequest = get("/items/{id}", expectedId).with(ApiTest.USER_JWT)
                                 .accept(MediaType.APPLICATION_JSON);
 
                 final var response = this.mvc.perform(aRequest);
@@ -181,7 +182,7 @@ public class ItemAPITest {
                                 .thenThrow(NotFoundException.with(Item.class, expectedId));
 
                 // when
-                final var aRequest = get("/items/{id}", expectedId.getValue())
+                final var aRequest = get("/items/{id}", expectedId.getValue()).with(ApiTest.USER_JWT)
                                 .accept(MediaType.APPLICATION_JSON);
 
                 final var response = this.mvc.perform(aRequest);
@@ -208,7 +209,7 @@ public class ItemAPITest {
                                 .thenReturn(UpdateItemOutput.from(expectedId));
 
                 // when
-                final var aRequest = put("/items/{id}", expectedId.getValue())
+                final var aRequest = put("/items/{id}", expectedId.getValue()).with(ApiTest.ADMIN_JWT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(aCommand));
 
@@ -242,7 +243,7 @@ public class ItemAPITest {
                                 .thenThrow(NotificationException.with(new Error(expectedMessage)));
 
                 // when
-                final var aRequest = put("/items/{id}", expectedId.getValue())
+                final var aRequest = put("/items/{id}", expectedId.getValue()).with(ApiTest.ADMIN_JWT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(aCommand));
 
@@ -270,7 +271,7 @@ public class ItemAPITest {
                 doNothing().when(deleteItemUseCase).execute(any());
 
                 // when
-                final var aRequest = delete("/items/{id}", expectedId.getValue());
+                final var aRequest = delete("/items/{id}", expectedId.getValue()).with(ApiTest.ADMIN_JWT);
 
                 final var response = this.mvc.perform(aRequest)
                                 .andDo(print());
@@ -291,7 +292,7 @@ public class ItemAPITest {
                                 .when(deleteItemUseCase).execute(any());
 
                 // when
-                final var aRequest = delete("/items/{id}", expectedId.getValue());
+                final var aRequest = delete("/items/{id}", expectedId.getValue()).with(ApiTest.ADMIN_JWT);
 
                 final var response = this.mvc.perform(aRequest)
                                 .andDo(print());
@@ -329,7 +330,7 @@ public class ItemAPITest {
                                                 expectedItems));
 
                 // when
-                final var aRequest = get("/items")
+                final var aRequest = get("/items").with(ApiTest.USER_JWT)
                                 .queryParam("page", String.valueOf(expectedPage))
                                 .queryParam("perPage", String.valueOf(expectedPerPage))
                                 .queryParam("search", expectedTerms)
@@ -382,7 +383,7 @@ public class ItemAPITest {
                                                 expectedItems));
 
                 // when
-                final var aRequest = get("/items")
+                final var aRequest = get("/items").with(ApiTest.USER_JWT)
                                 .accept(MediaType.APPLICATION_JSON);
                 
                 final var response = this.mvc.perform(aRequest);

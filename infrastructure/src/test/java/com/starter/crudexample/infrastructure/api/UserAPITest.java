@@ -32,6 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.starter.crudexample.ControllerTest;
+import com.starter.crudexample.ApiTest;
 import com.starter.crudexample.application.user.create.CreateUserOutput;
 import com.starter.crudexample.application.user.create.DefaultCreateUserUseCase;
 import com.starter.crudexample.application.user.delete.DefaultDeleteUserUseCase;
@@ -93,6 +94,7 @@ public class UserAPITest {
 
         // When
         final var response = this.mvc.perform(post("/users")
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(aCommand)));
 
@@ -126,6 +128,7 @@ public class UserAPITest {
 
         // When
         final var response = this.mvc.perform(post("/users")
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(aCommand)));
 
@@ -161,6 +164,7 @@ public class UserAPITest {
 
         // When
         final var response = this.mvc.perform(post("/users")
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(aCommand)));
 
@@ -205,6 +209,7 @@ public class UserAPITest {
 
         // When
         final var response = this.mvc.perform(get("/users/{id}", expectedId)
+                .with(ApiTest.ADMIN_JWT)
                 .accept(MediaType.APPLICATION_JSON));
 
         // Then
@@ -232,6 +237,7 @@ public class UserAPITest {
 
         // When
         final var response = this.mvc.perform(get("/users/{id}", expectedId)
+                .with(ApiTest.ADMIN_JWT)
                 .accept(MediaType.APPLICATION_JSON));
 
         // Then
@@ -265,6 +271,7 @@ public class UserAPITest {
 
         // When
         final var response = this.mvc.perform(put("/users/{id}", expectedId)
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(aCommand)));
 
@@ -307,6 +314,7 @@ public class UserAPITest {
 
         // When
         final var response = this.mvc.perform(put("/users/{id}", expectedId)
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(aCommand)));
 
@@ -350,6 +358,7 @@ public class UserAPITest {
 
         // When
         final var response = this.mvc.perform(put("/users/{id}", expectedId)
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(aCommand)));
 
@@ -392,6 +401,7 @@ public class UserAPITest {
 
         // When
         final var response = this.mvc.perform(put("/users/{id}", expectedId)
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(aCommand)));
 
@@ -431,6 +441,7 @@ public class UserAPITest {
 
         // When
         final var response = this.mvc.perform(put("/users/{id}", expectedId)
+                .with(ApiTest.ADMIN_JWT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(aCommand)));
 
@@ -457,7 +468,8 @@ public class UserAPITest {
         doNothing().when(deleteUserUseCase).execute(any());
 
         // When
-        final var response = this.mvc.perform(delete("/users/{id}", expectedId));
+        final var response = this.mvc.perform(delete("/users/{id}", expectedId)
+                .with(ApiTest.ADMIN_JWT));
 
         // Then
         response.andExpect(status().isNoContent());
@@ -474,7 +486,8 @@ public class UserAPITest {
                 .when(deleteUserUseCase).execute(any());
 
         // When
-        final var response = this.mvc.perform(delete("/users/{id}", expectedId));
+        final var response = this.mvc.perform(delete("/users/{id}", expectedId)
+                .with(ApiTest.ADMIN_JWT));
 
         // Then
         response.andExpect(status().isNotFound());
@@ -509,6 +522,7 @@ public class UserAPITest {
 
         // When
         final var response = this.mvc.perform(get("/users")
+                .with(ApiTest.ADMIN_JWT)
                 .queryParam("page", String.valueOf(expectedPage))
                 .queryParam("perPage", String.valueOf(expectedPerPage))
                 .queryParam("search", expectedTerms)

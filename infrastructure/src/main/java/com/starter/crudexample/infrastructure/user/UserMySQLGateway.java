@@ -81,6 +81,11 @@ public class UserMySQLGateway implements UserGateway {
         return this.userRepository.existsByEmail(email);
     }
 
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return this.userRepository.findByUsername(username).map(UserJpaEntity::toAggregate);
+    }
+
     private User save(final User aUser) {
         return this.userRepository.save(UserJpaEntity.from(aUser)).toAggregate();
     }

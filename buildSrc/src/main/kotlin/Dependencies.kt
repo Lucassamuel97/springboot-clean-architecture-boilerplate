@@ -2,6 +2,7 @@ object Versions {
     // Versão do Spring Boot que suporta Java 22
     const val springBoot = "3.4.0" 
     const val java = "22"
+    const val testcontainers = "1.20.4"
 }
 
 object Libs {
@@ -11,9 +12,26 @@ object Libs {
     const val springBootStarterValidation = "org.springframework.boot:spring-boot-starter-validation"
     const val springBootStarterTest = "org.springframework.boot:spring-boot-starter-test"
     const val springSecurityTest = "org.springframework.security:spring-security-test"
+    const val springSecurityOauth2Jose = "org.springframework.security:spring-security-oauth2-jose"
+    const val springSecurityOauth2ResourceServer = "org.springframework.security:spring-security-oauth2-resource-server"
     const val springBootDevTools = "org.springframework.boot:spring-boot-devtools"
     const val h2Database = "com.h2database:h2"
+    const val mysqlConnector = "com.mysql:mysql-connector-j"
     const val lombok = "org.projectlombok:lombok"
     const val springdocOpenapi = "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0"
     const val jacksonAfterburner = "com.fasterxml.jackson.module:jackson-module-afterburner"
+    
+    // JWT
+    const val jjwtApi = "io.jsonwebtoken:jjwt-api:0.12.5"
+    const val jjwtImpl = "io.jsonwebtoken:jjwt-impl:0.12.5"
+    const val jjwtJackson = "io.jsonwebtoken:jjwt-jackson:0.12.5"
+
+    // Flyway
+    const val flywayCore = "org.flywaydb:flyway-core"
+    const val flywayMysql = "org.flywaydb:flyway-mysql"
+    
+    // TestContainers
+    const val testcontainersJupiter = "org.testcontainers:junit-jupiter:${Versions.testcontainers}"
+    const val testcontainersMysql = "org.testcontainers:mysql:${Versions.testcontainers}"
+    const val restAssured = "io.rest-assured:rest-assured:5.5.0"
 }

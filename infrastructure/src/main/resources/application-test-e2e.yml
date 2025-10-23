@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:${mysql.port}/testes_e2e?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+jwt:
+  secret: test-secret-key-for-e2e-tests-minimum-512-bits-required
+  expiration: 86400000
+
+mysql:
+  username: root
+  password: 123456
+  schema: testes_e2e
+  url: localhost:${mysql.port}

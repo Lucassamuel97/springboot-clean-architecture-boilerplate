@@ -78,10 +78,10 @@ public class SecurityConfig {
                 ).permitAll()
                 // Permitir acesso ao H2 Console (apenas desenvolvimento)
                 .requestMatchers("/h2-console/**").permitAll()
-                // Proteger endpoints de Items - apenas usuários com role USER ou ADMIN
-                .requestMatchers("/api/items/**").hasAnyRole("USER", "ADMIN")
+                // Proteger endpoints de Items - ambas roles USER e ADMIN podem fazer todas operações
+                .requestMatchers("/items/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 // Proteger endpoints de Users - apenas ADMIN
-                .requestMatchers("/api/users/**").hasRole("ADMIN")
+                .requestMatchers("/users/**").hasAuthority("ROLE_ADMIN")
                 // Qualquer outra requisição precisa de autenticação
                 .anyRequest().authenticated()
             );

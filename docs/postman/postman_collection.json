@@ -1,0 +1,870 @@
+{
+	"info": {
+		"_postman_id": "645cc2a9-3430-47ca-bdb0-50ea5276fb51",
+		"name": "CrudExample",
+		"description": "# Testes da API CrudExample\n\nEsta collection é usada para testar todos os endpoints da API de exemplo `CrudExample`.\n\n## 🚀 Fluxo de Teste\n\n1. Execute a requisição `Users > Login` para obter um `jwt_token`.\n    \n2. O token será salvo automaticamente na variável de ambiente `{{jwt_token}}`.\n    \n3. Execute as outras requisições (CRUD de Users, CRUD de Items), que já estão configuradas para usar este token para autenticação.\n    \n\nVariáveis de Ambiente:  \n\\* \"{{ jwt_token }}\": Armazena o token de acesso após o login.  \n\\* \"{{ last_user_id }}\": Salva o ID do último usuário manipulado.  \n\\* \"{{ last_item_id }}\": Salva o ID do último item manipulado.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7728204"
+	},
+	"item": [
+		{
+			"name": "Items",
+			"item": [
+				{
+					"name": "Lista de itens",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// ======================================",
+									"// Testes para a listagem de itens",
+									"// ======================================",
+									"",
+									"// Verifica se o status da resposta é 200 (OK)",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Converte o corpo da resposta para JSON",
+									"var response = pm.response.json();",
+									"",
+									"// Verifica se o corpo contém as propriedades esperadas",
+									"pm.test(\"Response body has expected pagination fields\", function () {",
+									"    pm.expect(response).to.have.property(\"current_page\");",
+									"    pm.expect(response).to.have.property(\"per_page\");",
+									"    pm.expect(response).to.have.property(\"total\");",
+									"    pm.expect(response).to.have.property(\"items\");",
+									"});",
+									"",
+									"// Verifica se \"items\" é um array",
+									"pm.test(\"'items' is an array\", function () {",
+									"    pm.expect(response.items).to.be.an(\"array\");",
+									"});",
+									"",
+									"// Verifica se há pelo menos um item retornado",
+									"pm.test(\"At least one item is returned\", function () {",
+									"    pm.expect(response.items.length).to.be.above(0);",
+									"});",
+									"",
+									"// Testa se cada item contém os campos esperados",
+									"if (response.items.length > 0) {",
+									"    pm.test(\"Each item has the required fields\", function () {",
+									"        response.items.forEach(function (item) {",
+									"            pm.expect(item).to.have.property(\"id\");",
+									"            pm.expect(item).to.have.property(\"name\");",
+									"            pm.expect(item).to.have.property(\"description\");",
+									"            pm.expect(item).to.have.property(\"price\");",
+									"            pm.expect(item).to.have.property(\"created_at\");",
+									"        });",
+									"    });",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Salvar Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// ======================================",
+									"// Testes para criação de item (POST /items)",
+									"// ======================================",
+									"",
+									"// Verifica se o status da resposta é 201 (Created) ou 200 (caso sua API retorne isso)",
+									"pm.test(\"Status code is 200 or 201\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"",
+									"// Converte o corpo da resposta para JSON",
+									"var response = pm.response.json();",
+									"",
+									"// Verifica se o corpo contém o campo \"id\"",
+									"pm.test(\"Response has 'id' property\", function () {",
+									"    pm.expect(response).to.have.property(\"id\");",
+									"});",
+									"",
+									"// Verifica se o campo \"id\" não está vazio",
+									"pm.test(\"'id' value is not empty\", function () {",
+									"    pm.expect(response.id).to.not.be.empty;",
+									"});",
+									"",
+									"// (Opcional) Salva o ID do item criado como variável de ambiente",
+									"pm.environment.set(\"last_item_id\", response.id);",
+									"console.log(\"Item criado com ID:\", response.id);",
+									"",
+									"// ======================================",
+									"// Testes adicionais (caso o backend retorne mais dados futuramente)",
+									"// ======================================",
+									"",
+									"// Testa se o tipo de 'id' é string (UUID, por exemplo)",
+									"pm.test(\"'id' should be a string\", function () {",
+									"    pm.expect(response.id).to.be.a(\"string\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{    \n    \"name\": \"Produto joas \",\n    \"description\": \"Este é um item de teste criado pelo seeder para demonstração do sistema\",\n    \"price\": 99.99\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// ======================================",
+									"// Testes para atualização de item (PUT /items/:id)",
+									"// ======================================",
+									"",
+									"// Verifica se o status da resposta é 200 (OK)",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Converte o corpo da resposta para JSON",
+									"var response = pm.response.json();",
+									"",
+									"// Verifica se o corpo contém o campo \"id\"",
+									"pm.test(\"Response has 'id' property\", function () {",
+									"    pm.expect(response).to.have.property(\"id\");",
+									"});",
+									"",
+									"// Verifica se o 'id' retornado é o mesmo do item atualizado",
+									"pm.test(\"'id' matches the updated item ID\", function () {",
+									"    var lastItemId = pm.environment.get(\"last_item_id\");",
+									"    pm.expect(response.id).to.eql(lastItemId);",
+									"});",
+									"",
+									"// Verifica se o campo 'id' não está vazio",
+									"pm.test(\"'id' value is not empty\", function () {",
+									"    pm.expect(response.id).to.not.be.empty;",
+									"});",
+									"",
+									"// Testa o tipo de dado de 'id'",
+									"pm.test(\"'id' should be a string\", function () {",
+									"    pm.expect(response.id).to.be.a(\"string\");",
+									"});",
+									"",
+									"// Log opcional",
+									"console.log(\"Item atualizado com ID:\", response.id);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{    \n    \"name\": \"Produto atualizar \",\n    \"description\": \"Este é um item de teste criado pelo seeder para demonstração do sistema\",\n    \"price\": 99.99\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/items/{{last_item_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"items",
+								"{{last_item_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// ======================================",
+									"// Testes para consulta de item por ID (GET /items/:id)",
+									"// ======================================",
+									"",
+									"// Verifica se o status da resposta é 200 (OK)",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Converte a resposta para JSON",
+									"var response = pm.response.json();",
+									"",
+									"// Verifica se o corpo contém os campos esperados",
+									"pm.test(\"Response has expected fields\", function () {",
+									"    pm.expect(response).to.have.property(\"id\");",
+									"    pm.expect(response).to.have.property(\"name\");",
+									"    pm.expect(response).to.have.property(\"description\");",
+									"    pm.expect(response).to.have.property(\"price\");",
+									"    pm.expect(response).to.have.property(\"created_at\");",
+									"    pm.expect(response).to.have.property(\"updated_at\");",
+									"});",
+									"",
+									"// Verifica se o ID retornado corresponde ao {{last_item_id}}",
+									"pm.test(\"'id' matches the requested item ID\", function () {",
+									"    var lastItemId = pm.environment.get(\"last_item_id\");",
+									"    pm.expect(response.id).to.eql(lastItemId);",
+									"});",
+									"",
+									"// Verifica se os tipos dos campos estão corretos",
+									"pm.test(\"Field types are correct\", function () {",
+									"    pm.expect(response.id).to.be.a(\"string\");",
+									"    pm.expect(response.name).to.be.a(\"string\");",
+									"    pm.expect(response.description).to.be.a(\"string\");",
+									"    pm.expect(response.price).to.be.a(\"number\");",
+									"    pm.expect(response.created_at).to.be.a(\"string\");",
+									"    pm.expect(response.updated_at).to.be.a(\"string\");",
+									"});",
+									"",
+									"// (Opcional) Log para debug",
+									"console.log(\"Item consultado:\", response);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/items/{{last_item_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"items",
+								"{{last_item_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete item by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Teste principal",
+									"pm.test(\"Status code é 204 (item excluído com sucesso)\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"// Pega o ID e o token atual",
+									"const deletedId = pm.environment.get(\"last_item_id\");",
+									"const token = pm.environment.get(\"jwt_token\"); // ou o nome que você usa no ambiente",
+									"",
+									"// Faz GET autenticado para confirmar exclusão",
+									"pm.sendRequest({",
+									"    url: `http://localhost:8080/items/${deletedId}`,",
+									"    method: \"GET\",",
+									"    header: {",
+									"        \"Authorization\": `Bearer ${token}`,",
+									"        \"Content-Type\": \"application/json\"",
+									"    }",
+									"}, function (err, res) {",
+									"    pm.test(\"Item não deve mais existir (GET retorna 404)\", function () {",
+									"        pm.expect(res.code).to.eql(404);",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/items/{{last_item_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"items",
+								"{{last_item_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Lista de Usuarios",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Salvar usuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verifica se o usuário foi criado com sucesso",
+									"pm.test(\"Status code é 201 (Usuário criado com sucesso)\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Salva o ID do usuário recém-criado no ambiente",
+									"const jsonData = pm.response.json();",
+									"if (jsonData.id) {",
+									"    pm.environment.set(\"last_user_id\", jsonData.id);",
+									"    console.log(\"Usuário criado com ID:\", jsonData.id);",
+									"} else {",
+									"    console.warn(\"Nenhum ID de usuário retornado!\");",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"samuca\",\n    \"email\": \"teste@example.com\",\n    \"password\": \"12345678\",\n    \"roles\": [\n        \"ADMIN\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Usuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// 1. Verifica se a requisição foi bem-sucedida (Status 200 OK)",
+									"pm.test(\"Status code é 200 (Usuário atualizado com sucesso)\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Garante que a resposta é um JSON válido",
+									"pm.test(\"A resposta é um JSON válido\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"// 3. Analisa (parse) o corpo da resposta JSON",
+									"const jsonData = pm.response.json();",
+									"",
+									"// 4. Verifica se a resposta JSON contém a propriedade 'id'",
+									"pm.test(\"A resposta JSON contém a propriedade 'id'\", function () {",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"});",
+									"",
+									"// 5. Verifica se a propriedade 'id' é uma string",
+									"pm.test(\"A propriedade 'id' é uma string\", function () {",
+									"    pm.expect(jsonData.id).to.be.a('string');",
+									"});",
+									"",
+									"// 6. Pega o ID que foi usado na URL a partir da variável de ambiente",
+									"const expectedId = pm.environment.get(\"last_user_id\");",
+									"",
+									"// 7. Verifica se o ID retornado no corpo da resposta é o mesmo que foi enviado na URL",
+									"pm.test(\"O ID na resposta corresponde ao ID enviado na URL\", function () {",
+									"    pm.expect(jsonData.id).to.eql(expectedId);",
+									"    console.log(\"ID do usuário atualizado e verificado:\", jsonData.id);",
+									"});",
+									"",
+									"// 8. (Opcional) Verifica o tempo de resposta",
+									"pm.test(\"O tempo de resposta é aceitável (menor que 500ms)\", function () {",
+									"    pm.response.to.have.responseTime.below(500);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"samuca 2\",\n    \"email\": \"teste@example.com\",\n    \"password\": \"12345678\",\n    \"roles\": [\n        \"ADMIN\",\n        \"USER\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/{{last_user_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"{{last_user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// 1. Verifica se a requisição foi bem-sucedida (Status 200 OK)",
+									"pm.test(\"Status code é 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Garante que a resposta é um JSON válido",
+									"pm.test(\"A resposta é um JSON válido\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"// 3. Analisa (parse) o corpo da resposta JSON",
+									"const jsonData = pm.response.json();",
+									"",
+									"// 4. Pega o ID que foi usado na URL a partir da variável de ambiente",
+									"const expectedId = pm.environment.get(\"last_user_id\");",
+									"",
+									"// 5. [TESTE PRINCIPAL] Verifica se o ID no corpo da resposta é o mesmo da variável",
+									"pm.test(\"O 'id' do usuário na resposta corresponde ao 'last_user_id'\", function () {",
+									"    pm.expect(jsonData.id).to.eql(expectedId);",
+									"    console.log(\"ID do usuário verificado:\", jsonData.id);",
+									"});",
+									"",
+									"// 6. Verifica a estrutura (schema) e os tipos de dados da resposta",
+									"pm.test(\"O corpo da resposta contém as propriedades e tipos corretos\", function () {",
+									"    // Verificação de existência das chaves",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('username');",
+									"    pm.expect(jsonData).to.have.property('email');",
+									"    pm.expect(jsonData).to.have.property('roles');",
+									"    pm.expect(jsonData).to.have.property('active');",
+									"    pm.expect(jsonData).to.have.property('created_at');",
+									"    pm.expect(jsonData).to.have.property('updated_at');",
+									"    pm.expect(jsonData).to.have.property('deleted_at'); // Garante que a chave existe, mesmo se for null",
+									"",
+									"    // Verificação dos tipos de dados",
+									"    pm.expect(jsonData.id).to.be.a('string');",
+									"    pm.expect(jsonData.username).to.be.a('string');",
+									"    pm.expect(jsonData.email).to.be.a('string');",
+									"    pm.expect(jsonData.roles).to.be.an('array');",
+									"    pm.expect(jsonData.active).to.be.a('boolean');",
+									"});",
+									"",
+									"// 7. (Opcional) Verifica valores específicos que você espera",
+									"// Como esta requisição vem depois da de \"update\", podemos verificar os dados atualizados.",
+									"pm.test(\"Os dados do usuário (username e email) estão corretos\", function () {",
+									"    pm.expect(jsonData.username).to.eql(\"samuca 2\");",
+									"    pm.expect(jsonData.email).to.eql(\"teste@example.com\");",
+									"    pm.expect(jsonData.active).to.be.true;",
+									"    pm.expect(jsonData.deleted_at).to.be.null;",
+									"});",
+									"",
+									"// 8. (Opcional) Verifica o tempo de resposta",
+									"pm.test(\"O tempo de resposta é rápido (menor que 300ms)\", function () {",
+									"    pm.response.to.have.responseTime.below(300); // GETs devem ser rápidos",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/{{last_user_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"{{last_user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// --- Testes da Resposta DELETE ---",
+									"",
+									"// 1. Teste principal: Verifica se o status code é 204",
+									"pm.test(\"Status code é 204 (No Content - Usuário excluído)\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"// 2. Verifica se o corpo da resposta está realmente vazio",
+									"pm.test(\"O corpo da resposta está vazio\", function () {",
+									"    pm.expect(pm.response.text()).to.be.empty;",
+									"});",
+									"",
+									"// 3. (Opcional) Verifica o tempo de resposta",
+									"pm.test(\"O tempo de resposta é aceitável (menor que 400ms)\", function () {",
+									"    pm.response.to.have.responseTime.below(400);",
+									"});",
+									"",
+									"",
+									"// --- Teste de Confirmação (Follow-up GET) ---",
+									"",
+									"// Pega o ID do usuário que acabou de ser excluído",
+									"const deletedUserId = pm.environment.get(\"last_user_id\");",
+									"// Pega o token de autenticação do ambiente",
+									"const token = pm.environment.get(\"jwt_token\"); // Certifique-se que o nome da variável \"jwt_token\" está correto",
+									"",
+									"// 4. Envia uma requisição GET para confirmar que o usuário foi mesmo excluído",
+									"// Esta requisição é assíncrona e seus testes rodam dentro do \"callback\"",
+									"pm.sendRequest({",
+									"    url: `http://localhost:8080/users/${deletedUserId}`, // URL correta para buscar o usuário",
+									"    method: \"GET\",",
+									"    header: {",
+									"        \"Authorization\": `Bearer ${token}`, // Envia a autenticação",
+									"        \"Accept\": \"application/json\"",
+									"    }",
+									"}, function (err, res) {",
+									"    // 'res' é a resposta da requisição GET, não da DELETE",
+									"    if (err) {",
+									"        console.error(\"Erro na requisição GET de verificação:\", err);",
+									"    }",
+									"",
+									"    // O teste principal de confirmação",
+									"    pm.test(\"Confirmação: GET no usuário excluído retorna 404 (Not Found)\", function () {",
+									"        pm.expect(res.code).to.eql(404);",
+									"    });",
+									"});",
+									"",
+									"// 5. (Opcional) Limpa a variável de ambiente após a exclusão",
+									"pm.environment.unset(\"last_user_id\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/users/{{last_user_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"{{last_user_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ======================================",
+							"// 1️⃣  Salva o token JWT na variável de ambiente",
+							"// ======================================",
+							"var response = pm.response.json();",
+							"",
+							"if (response.access_token) {",
+							"    pm.environment.set(\"jwt_token\", response.access_token);",
+							"    console.log(\"Token JWT salvo:\", response.access_token);",
+							"} else {",
+							"    console.warn(\"Nenhum token JWT encontrado na resposta!\");",
+							"}",
+							"",
+							"// ======================================",
+							"// 2️⃣  Testes da resposta",
+							"// ======================================",
+							"",
+							"// Testa se o status é 200",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Testa se contém 'access_token'",
+							"pm.test(\"Response has access_token property\", function () {",
+							"    pm.expect(response).to.have.property(\"access_token\");",
+							"});",
+							"",
+							"// Testa se a variável 'jwt_token' foi criada e confere com o access_token",
+							"pm.test(\"jwt_token environment variable is set and matches access_token\", function () {",
+							"    var jwtToken = pm.environment.get(\"jwt_token\");",
+							"    pm.expect(jwtToken, \"jwt_token environment variable should be set\").to.exist;",
+							"    pm.expect(jwtToken, \"jwt_token should match access_token\").to.eql(response.access_token);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

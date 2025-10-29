@@ -1,0 +1,17 @@
+# Ignore version control and IDE metadata
+.git
+.gitignore
+.idea/
+*.iml
+
+# Ignore build outputs
+build/
+**/build/
+
+# Ignore Gradle caches and wrapper binaries that should be re-downloaded inside the container
+.gradle/
+**/.gradle/
+
+# Ignore local environment artifacts
+docker-compose.override.yml
+.env

@@ -15,6 +15,7 @@ import java.time.Instant;
 public class ItemJpaEntity {
 
     @Id
+    @Column(name = "id", nullable = false, columnDefinition = "CHAR(36)")
     private String id;
 
     @Column(name = "name", nullable = false)
@@ -23,7 +24,7 @@ public class ItemJpaEntity {
     @Column(name = "description", length = 4000)
     private String description;
 
-    @Column(name = "price", nullable = false)
+    @Column(name = "price", nullable = false, columnDefinition = "DECIMAL(19,2)")
     private Double price;
 
     @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME(6)")

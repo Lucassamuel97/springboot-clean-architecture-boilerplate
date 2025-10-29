@@ -24,6 +24,7 @@ import jakarta.persistence.Table;
 public class UserJpaEntity {
 
     @Id
+    @Column(name = "id", nullable = false, columnDefinition = "CHAR(36)")
     private String id;
 
     @Column(name = "username", nullable = false)
@@ -36,7 +37,7 @@ public class UserJpaEntity {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", columnDefinition = "CHAR(36)"))
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private List<Role> roles;

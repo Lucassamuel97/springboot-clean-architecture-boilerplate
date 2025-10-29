@@ -87,15 +87,42 @@ cd springboot-clean-architecture-boilerplate
 
 ## Running the Application
 
-### 1. Start MySQL with Docker
+### Option 1: Docker (Recommended)
+
+The easiest way to run the entire stack (application + MySQL) is using Docker Compose:
 
 ```bash
-docker compose up -d
+# Build and start all services
+DOCKER_BUILDKIT=1 docker compose up --build
+
+# Or run in detached mode
+DOCKER_BUILDKIT=1 docker compose up --build -d
+
+# View logs
+docker compose logs -f app
+
+# Stop services
+docker compose down
+
+# Stop services and remove volumes (clean database)
+docker compose down -v
 ```
 
-This command reads `docker-compose.yml` and starts a MySQL 8 instance exposed on port `3307`. Data persists in a local Docker volume named `mysql_data`.
+The application will be available at `http://localhost:8080` and MySQL at `localhost:3307`.
 
-### 2. Build the Project
+**Note**: The Docker setup uses multi-stage builds to create an optimized production image with Java 22 JRE Alpine.
+
+### Option 2: Local Development
+
+#### 1. Start MySQL with Docker
+
+```bash
+docker compose up -d mysql
+```
+
+This command starts only the MySQL 8 instance exposed on port `3307`. Data persists in a local Docker volume named `mysql_data`.
+
+#### 2. Build the Project
 
 ```bash
 ./gradlew clean build
@@ -103,7 +130,7 @@ This command reads `docker-compose.yml` and starts a MySQL 8 instance exposed on
 
 The build runs unit and integration tests, compiles all modules, and produces the executable jar under `infrastructure/build/libs/`.
 
-### 3. Run via Executable Jar
+#### 3. Run via Executable Jar
 
 ```bash
 java -jar infrastructure/build/libs/infrastructure-0.0.1-SNAPSHOT.jar
@@ -111,7 +138,7 @@ java -jar infrastructure/build/libs/infrastructure-0.0.1-SNAPSHOT.jar
 
 By default the application listens on `http://localhost:8080`. Update `application.yml` or provide environment variables to customize database URL, credentials, and JWT settings.
 
-### 4. Alternative: Run with Gradle
+#### 4. Alternative: Run with Gradle
 
 ```bash
 ./gradlew :infrastructure:bootRun
@@ -152,11 +179,16 @@ The application exposes login endpoints that return JWT tokens and protects busi
 
 | Task | Command |
 |------|---------|
-| Start MySQL | `docker compose up -d` |
+| Start all services (Docker) | `DOCKER_BUILDKIT=1 docker compose up --build -d` |
+| View application logs | `docker compose logs -f app` |
+| Stop all services | `docker compose down` |
+| Stop and remove volumes | `docker compose down -v` |
+| Start MySQL only | `docker compose up -d mysql` |
 | Stop MySQL | `docker compose down` |
 | Build all modules | `./gradlew clean build` |
 | Create boot jar | `./gradlew :infrastructure:bootJar` |
-| Run via jar | `java -jar infrastructure/build/libs/infrastructure-0.0.1-SNAPSHOT.jar` |
+| Run via jar (local) | `java -jar infrastructure/build/libs/infrastructure-0.0.1-SNAPSHOT.jar` |
+| Run with Gradle | `./gradlew :infrastructure:bootRun` |
 | Run tests | `./gradlew test` |
 
 ## Contributing

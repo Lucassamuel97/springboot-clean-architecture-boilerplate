@@ -86,15 +86,42 @@ cd springboot-clean-architecture-boilerplate
 
 ## Executando a Aplicação
 
-### 1. Subir MySQL com Docker
+### Opção 1: Docker (Recomendado)
+
+A forma mais fácil de executar toda a stack (aplicação + MySQL) é usando Docker Compose:
 
 ```bash
-docker compose up -d
+# Fazer build e iniciar todos os serviços
+DOCKER_BUILDKIT=1 docker compose up --build
+
+# Ou executar em segundo plano
+DOCKER_BUILDKIT=1 docker compose up --build -d
+
+# Ver logs da aplicação
+docker compose logs -f app
+
+# Parar os serviços
+docker compose down
+
+# Parar os serviços e remover volumes (limpar banco de dados)
+docker compose down -v
 ```
 
-O comando lê `docker-compose.yml` e inicia uma instância MySQL 8 exposta na porta `3307`. Os dados ficam salvos no volume Docker `mysql_data`.
+A aplicação ficará disponível em `http://localhost:8080` e o MySQL em `localhost:3307`.
 
-### 2. Fazer o Build do Projeto
+**Nota**: O setup Docker usa multi-stage builds para criar uma imagem otimizada de produção com Java 22 JRE Alpine.
+
+### Opção 2: Desenvolvimento Local
+
+#### 1. Subir MySQL com Docker
+
+```bash
+docker compose up -d mysql
+```
+
+O comando inicia apenas a instância MySQL 8 exposta na porta `3307`. Os dados ficam salvos no volume Docker `mysql_data`.
+
+#### 2. Fazer o Build do Projeto
 
 ```bash
 ./gradlew clean build
@@ -102,7 +129,7 @@ O comando lê `docker-compose.yml` e inicia uma instância MySQL 8 exposta na po
 
 Executa testes, compila todos os módulos e gera o jar executável em `infrastructure/build/libs/`.
 
-### 3. Executar via Jar
+#### 3. Executar via Jar
 
 ```bash
 java -jar infrastructure/build/libs/infrastructure-0.0.1-SNAPSHOT.jar
@@ -110,7 +137,7 @@ java -jar infrastructure/build/libs/infrastructure-0.0.1-SNAPSHOT.jar
 
 A aplicação fica disponível em `http://localhost:8080`. Para customizar URL do banco, credenciais ou parâmetros de JWT, ajuste `application.yml` ou defina variáveis de ambiente.
 
-### 4. Alternativa: Gradle BootRun
+#### 4. Alternativa: Gradle BootRun
 
 ```bash
 ./gradlew :infrastructure:bootRun
@@ -151,11 +178,16 @@ A API expõe endpoints de login e protege recursos com controle de acesso basead
 
 | Tarefa | Comando |
 |--------|---------|
-| Subir MySQL | `docker compose up -d` |
+| Iniciar todos os serviços (Docker) | `DOCKER_BUILDKIT=1 docker compose up --build -d` |
+| Ver logs da aplicação | `docker compose logs -f app` |
+| Parar todos os serviços | `docker compose down` |
+| Parar e remover volumes | `docker compose down -v` |
+| Subir apenas MySQL | `docker compose up -d mysql` |
 | Derrubar MySQL | `docker compose down` |
 | Build completo | `./gradlew clean build` |
 | Gerar boot jar | `./gradlew :infrastructure:bootJar` |
-| Executar jar | `java -jar infrastructure/build/libs/infrastructure-0.0.1-SNAPSHOT.jar` |
+| Executar jar (local) | `java -jar infrastructure/build/libs/infrastructure-0.0.1-SNAPSHOT.jar` |
+| Executar com Gradle | `./gradlew :infrastructure:bootRun` |
 | Rodar testes | `./gradlew test` |
 
 ## Contribuindo
